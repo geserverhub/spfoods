@@ -1,42 +1,25 @@
 import React from 'react';
-import { Truck, Leaf, Shield, Award } from 'lucide-react';
+import { Factory, Truck, Globe, Shield } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Services() {
+  const { t } = useLanguage();
+
   const services = [
-    {
-      icon: Truck,
-      title: 'ส่งด่วน 24 ชั่วโมง',
-      description: 'เรากำหนด: ส่งสินค้าตรงจากไร่สดใหม่ทุกวัน'
-    },
-    {
-      icon: Leaf,
-      title: 'ไม่ใช้สารเคมี',
-      description: 'ปลอดภัยและเกษตรอินทรีย์ 100% สำหรับครอบครัวของคุณ'
-    },
-    {
-      icon: Shield,
-      title: 'ประกันคุณภาพ',
-      description: 'ทั้งหมดจำหน่ายผ่านการตรวจสอบอย่างเข้มงวด'
-    },
-    {
-      icon: Award,
-      title: 'รางวัลและการรับรอง',
-      description: 'ได้รับรางวัลระดับชาติสำหรับคุณภาพเกษตร'
-    }
+    { icon: Factory, title: t.service1Title, description: t.service1Desc },
+    { icon: Truck, title: t.service2Title, description: t.service2Desc },
+    { icon: Globe, title: t.service3Title, description: t.service3Desc },
+    { icon: Shield, title: t.service4Title, description: t.service4Desc },
   ];
 
   return (
     <section id="services" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="section-title">บริการและข้อดีของเรา</h2>
-          <p className="section-subtitle">
-            ทำไมลูกค้ากว่า 10,000 คนเลือก SP Foods
-          </p>
+          <h2 className="section-title">{t.servicesTitle}</h2>
+          <p className="section-subtitle">{t.servicesSubtitle}</p>
         </div>
 
-        {/* Services Grid */}
         <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-8">
           {services.map((service, index) => {
             const IconComponent = service.icon;
