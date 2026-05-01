@@ -6,13 +6,27 @@ import registrationRoutes from './routes/registrations.js';
 import trackingRoutes from './routes/tracking.js';
 import departmentRoutes from './routes/departments.js';
 import customerRoutes from './routes/customers.js';
+import productRoutes from './routes/products.js';
+import invoiceRoutes from './routes/invoices.js';
+import expenseRoutes from './routes/expenses.js';
+import productionRoutes from './routes/production.js';
+import qualityRoutes from './routes/quality.js';
+import deliveryRoutes from './routes/delivery.js';
+import purchaseRoutes from './routes/purchase.js';
+import stockApiRoutes from './routes/stock-api.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173' }));
+const allowedOrigins = [
+  'http://localhost:3005',
+  'http://localhost:5173',
+  'https://strong-dory-enabled.ngrok-free.app',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
@@ -20,6 +34,14 @@ app.use('/api/registrations', registrationRoutes);
 app.use('/api/tracking', trackingRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/production', productionRoutes);
+app.use('/api/quality', qualityRoutes);
+app.use('/api/delivery', deliveryRoutes);
+app.use('/api/purchase', purchaseRoutes);
+app.use('/api/stock-api', stockApiRoutes);
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
 

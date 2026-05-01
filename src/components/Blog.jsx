@@ -12,7 +12,7 @@ export default function Blog() {
   const { t } = useLanguage();
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-light">
+    <section id="blog" className="scroll-mt-14 py-20 px-4 sm:px-6 lg:px-8 bg-light">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="section-title">{t.blogTitle}</h2>

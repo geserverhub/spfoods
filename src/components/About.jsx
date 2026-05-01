@@ -8,7 +8,7 @@ export default function About() {
   const features = [t.aboutFeature1, t.aboutFeature2, t.aboutFeature3, t.aboutFeature4];
 
   return (
-    <section id="about" className="py-20 px-4 sm:px-6 lg:px-8 bg-light">
+    <section id="about" className="scroll-mt-14 py-20 px-4 sm:px-6 lg:px-8 bg-light">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="relative">

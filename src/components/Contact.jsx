@@ -19,7 +19,7 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+    <section id="contact" className="scroll-mt-14 py-20 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="section-title">{t.contactTitle}</h2>
@@ -56,7 +56,7 @@ export default function Contact() {
         </div>
 
         {/* Partner Announcement Banner */}
-        <div id="announce" className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-orange-500 to-accent p-1 shadow-2xl">
+        <div id="announce" className="scroll-mt-14 relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-orange-500 to-accent p-1 shadow-2xl">
           <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-[22px] px-8 py-12 md:px-16 md:py-14">
 
             {/* Top badge */}

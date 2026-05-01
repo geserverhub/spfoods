@@ -15,7 +15,7 @@ export default function Products() {
   ];
 
   return (
-    <section id="products" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-light to-white">
+    <section id="products" className="scroll-mt-14 py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-light to-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="section-title">{t.productsTitle}</h2>

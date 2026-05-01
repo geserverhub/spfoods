@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import RegisterModal from './RegisterModal';
-import AdminLoginModal from './AdminLoginModal';
 import TrackingModal from './TrackingModal';
 
 const languages = [
@@ -15,10 +15,10 @@ const languages = [
 ];
 
 export default function Header() {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
-  const [adminOpen, setAdminOpen] = useState(false);
   const [trackingOpen, setTrackingOpen] = useState(false);
   const { lang, setLang, t } = useLanguage();
 
@@ -96,7 +96,7 @@ export default function Header() {
             </div>
 
             <button onClick={() => setRegisterOpen(true)} className="btn-outline text-xs px-3 py-1.5">{t.login}</button>
-            <button onClick={() => setAdminOpen(true)} className="btn-primary text-xs px-3 py-1.5">{t.admin}</button>
+            <button onClick={() => navigate('/admin')} className="btn-primary text-xs px-3 py-1.5">{t.admin}</button>
           </div>
 
           {/* Mobile menu button */}
@@ -142,7 +142,7 @@ export default function Header() {
             </div>
 
             <button onClick={() => { setRegisterOpen(true); setIsOpen(false); }} className="btn-outline w-full mt-2">{t.login}</button>
-            <button onClick={() => { setAdminOpen(true); setIsOpen(false); }} className="btn-primary w-full mt-2">{t.admin}</button>
+            <button onClick={() => { navigate('/admin'); setIsOpen(false); }} className="btn-primary w-full mt-2">{t.admin}</button>
           </div>
         )}
       </nav>
@@ -154,7 +154,6 @@ export default function Header() {
     </header>
 
     {registerOpen && <RegisterModal onClose={() => setRegisterOpen(false)} />}
-    {adminOpen && <AdminLoginModal onClose={() => setAdminOpen(false)} />}
     {trackingOpen && <TrackingModal onClose={() => setTrackingOpen(false)} />}
     </>
   );

@@ -51,7 +51,7 @@ export default function DeptLoginModal({ dept, labels, lang = 'th', onClose, onS
       if (!res.ok) {
         setError(data.error || t.errWrong);
       } else {
-        onSuccess({ token: data.token, dept, labels });
+        onSuccess(data.token);
       }
     } catch {
       setError(t.errServer);

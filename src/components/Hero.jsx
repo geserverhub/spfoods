@@ -6,7 +6,7 @@ export default function Hero() {
   const { t } = useLanguage();
 
   return (
-    <section id="hero" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-light via-white to-light min-h-screen flex items-center">
+    <section id="hero" className="scroll-mt-14 pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-light via-white to-light min-h-screen flex items-center">
       <div className="max-w-7xl mx-auto w-full">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">

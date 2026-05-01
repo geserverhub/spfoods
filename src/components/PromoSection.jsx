@@ -76,7 +76,7 @@ export default function PromoSection() {
   const promo = promos[current];
 
   return (
-    <section className="py-4 px-4 bg-gradient-to-b from-orange-50 to-white overflow-hidden border-b border-orange-100">
+    <section id="promo" className="scroll-mt-14 py-4 px-4 bg-gradient-to-b from-orange-50 to-white overflow-hidden border-b border-orange-100">
 
       {/* Ticker */}
       <div className="flex items-center gap-3 mb-6 overflow-hidden">
