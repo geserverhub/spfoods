@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.js';
 import registrationRoutes from './routes/registrations.js';
 import trackingRoutes from './routes/tracking.js';
 import departmentRoutes from './routes/departments.js';
+import customerRoutes from './routes/customers.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/registrations', registrationRoutes);
 app.use('/api/tracking', trackingRoutes);
 app.use('/api/departments', departmentRoutes);
+app.use('/api/customers', customerRoutes);
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
 

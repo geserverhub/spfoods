@@ -10,9 +10,14 @@ router.post('/', async (req, res) => {
     if (!name || !email || !phone || !address || !purpose) {
       return res.status(400).json({ error: 'กรุณากรอกข้อมูลให้ครบ' });
     }
+    const [[typeRow]] = await pool.query(
+      'SELECT userID FROM registration_types WHERE description = ? LIMIT 1',
+      [purpose]
+    );
+    const registration_type_id = typeRow?.userID || null;
     const [result] = await pool.query(
-      'INSERT INTO registrations (name, email, phone, company, address, purpose) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, email, phone, company || null, address, purpose]
+      'INSERT INTO registrations (name, email, phone, company, address, purpose, registration_type_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [name, email, phone, company || null, address, purpose, registration_type_id]
     );
     res.json({ success: true, id: result.insertId });
   } catch (err) {
