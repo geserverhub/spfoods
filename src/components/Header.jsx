@@ -23,7 +23,7 @@ export default function Header() {
     { name: t.nav.products, href: '#products' },
     { name: t.nav.about, href: '#about' },
     { name: t.nav.contact, href: '#contact' },
-    { name: t.nav.tracking, href: 'https://strong-dory-enabled.ngrok-free.app/', external: true },
+    { name: t.nav.tracking, href: 'https://strong-dory-enabled.ngrok-free.app/sp/tracking', external: true },
     { name: t.nav.announce, href: '#announce', highlight: true },
   ];
 
