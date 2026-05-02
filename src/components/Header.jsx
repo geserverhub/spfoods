@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -91,8 +92,8 @@ export default function Header() {
               )}
             </div>
 
-            <a href="https://strong-dory-enabled.ngrok-free.app/" target="_blank" rel="noopener noreferrer" className="btn-outline text-xs px-3 py-1.5">{t.login}</a>
-            <a href="https://strong-dory-enabled.ngrok-free.app/" target="_blank" rel="noopener noreferrer" className="btn-primary text-xs px-3 py-1.5">{t.admin}</a>
+            <Link to="/register" className="btn-outline text-xs px-3 py-1.5">{t.login}</Link>
+            <Link to="/admin" className="btn-primary text-xs px-3 py-1.5">{t.admin}</Link>
           </div>
 
           {/* Mobile menu button */}
@@ -139,8 +140,8 @@ export default function Header() {
               </div>
             </div>
 
-            <a href="https://strong-dory-enabled.ngrok-free.app/" target="_blank" rel="noopener noreferrer" className="btn-outline w-full mt-2 block text-center">{t.login}</a>
-            <a href="https://strong-dory-enabled.ngrok-free.app/" target="_blank" rel="noopener noreferrer" className="btn-primary w-full mt-2 block text-center">{t.admin}</a>
+            <Link to="/register" className="btn-outline w-full mt-2 block text-center">{t.login}</Link>
+            <Link to="/admin" className="btn-primary w-full mt-2 block text-center">{t.admin}</Link>
           </div>
         )}
       </nav>
