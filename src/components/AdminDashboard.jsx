@@ -96,7 +96,7 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     sessionStorage.removeItem('adminToken');
     deptMeta.forEach(d => sessionStorage.removeItem(`deptToken_${d.id}`));
-    navigate('/admin');
+    navigate('/admin-sp');
   };
 
   return (
@@ -128,7 +128,7 @@ export default function AdminDashboard() {
           </div>
           {/* Path indicator */}
           <span className="hidden md:inline text-gray-500 text-xs font-mono bg-white/5 px-2 py-1 rounded-lg">
-            /admin/dashboard
+            /admin-sp/dashboard
           </span>
           <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-xs">
             <User className="w-3.5 h-3.5" />
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
             return (
               <button
                 key={dept.id}
-                onClick={() => navigate(`/admin/dept/${dept.id}`)}
+                onClick={() => navigate(`/admin-sp/dept/${dept.id}`)}
                 className="text-left rounded-2xl border-2 border-gray-200 bg-white p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-gray-300"
               >
                 <div className="flex items-start justify-between mb-4">
@@ -217,7 +217,7 @@ export default function AdminDashboard() {
                 <h3 className="font-bold text-gray-800 text-base leading-tight">{labels.title}</h3>
                 <p className={`text-sm font-semibold mb-2 ${dept.text}`}>{labels.subtitle}</p>
                 <p className="text-xs text-gray-500 leading-relaxed">{labels.desc}</p>
-                <p className="text-xs text-gray-300 font-mono mt-2">/admin/dept/{dept.id}</p>
+                <p className="text-xs text-gray-300 font-mono mt-2">/admin-sp/dept/{dept.id}</p>
               </button>
             );
           })}

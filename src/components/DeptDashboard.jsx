@@ -133,7 +133,7 @@ export default function DeptDashboard() {
   const t = ui18n[lang] || ui18n.th;
 
   if (!dept) {
-    navigate('/admin/dashboard', { replace: true });
+    navigate('/admin-sp/dashboard', { replace: true });
     return null;
   }
 
@@ -146,7 +146,7 @@ export default function DeptDashboard() {
         dept={dept}
         labels={labels}
         lang={lang}
-        onClose={() => navigate('/admin/dashboard')}
+        onClose={() => navigate('/admin-sp/dashboard')}
         onSuccess={(token) => {
           sessionStorage.setItem(`deptToken_${deptId}`, token);
           setDeptToken(token);
@@ -184,7 +184,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
       <div className={`bg-gradient-to-r ${dept.color} text-white px-6 py-3 flex items-center justify-between shadow-lg shrink-0`}>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate('/admin/dashboard')}
+            onClick={() => navigate('/admin-sp/dashboard')}
             className="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-4 h-4 text-white" />
@@ -194,7 +194,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
           </div>
           <div>
             <p className="font-bold text-sm leading-tight">{labels?.title}</p>
-            <p className="text-white/70 text-xs font-mono">/admin/dept/{deptId}</p>
+            <p className="text-white/70 text-xs font-mono">/admin-sp/dept/{deptId}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -212,7 +212,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
             ))}
           </div>
           <button
-            onClick={() => navigate('/admin/dashboard')}
+            onClick={() => navigate('/admin-sp/dashboard')}
             className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full text-xs transition-colors"
           >
             <X className="w-3.5 h-3.5" />
@@ -281,7 +281,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 )}
                 <div>
                   <h2 className="text-lg font-bold text-gray-800">{pageContent[active]?.[lang] || activeMenu?.label}</h2>
-                  <p className="text-xs text-gray-400 font-mono">/admin/dept/{deptId}/{active}</p>
+                  <p className="text-xs text-gray-400 font-mono">/admin-sp/dept/{deptId}/{active}</p>
                 </div>
               </div>
 
