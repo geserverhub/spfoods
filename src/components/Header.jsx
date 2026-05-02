@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import RegisterModal from './RegisterModal';
-import TrackingModal from './TrackingModal';
 
 const languages = [
   { code: 'th', label: 'ไทย', flag: '🇹🇭' },
+  { code: 'my', label: 'မြန်မာ', flag: '🇲🇲' },
   { code: 'ko', label: '한국어', flag: '🇰🇷' },
   { code: 'en', label: 'English', flag: '🇬🇧' },
   { code: 'km', label: 'ខ្មែរ', flag: '🇰🇭' },
@@ -15,11 +13,8 @@ const languages = [
 ];
 
 export default function Header() {
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const [registerOpen, setRegisterOpen] = useState(false);
-  const [trackingOpen, setTrackingOpen] = useState(false);
   const { lang, setLang, t } = useLanguage();
 
   const navigation = [
@@ -28,7 +23,7 @@ export default function Header() {
     { name: t.nav.products, href: '#products' },
     { name: t.nav.about, href: '#about' },
     { name: t.nav.contact, href: '#contact' },
-    { name: t.nav.tracking, href: '#', onClick: () => setTrackingOpen(true) },
+    { name: t.nav.tracking, href: 'https://strong-dory-enabled.ngrok-free.app/', external: true },
     { name: t.nav.announce, href: '#announce', highlight: true },
   ];
 
@@ -56,7 +51,8 @@ export default function Header() {
               <a
                 key={item.name}
                 href={item.href}
-                onClick={item.onClick ? (e) => { e.preventDefault(); item.onClick(); } : undefined}
+                target={item.external ? '_blank' : undefined}
+                rel={item.external ? 'noopener noreferrer' : undefined}
                 className={item.highlight
                   ? 'bg-primary text-white px-2.5 py-1 rounded-full text-xs font-bold hover:bg-orange-600 transition-colors whitespace-nowrap'
                   : 'text-gray-700 hover:text-primary transition-colors text-xs font-medium whitespace-nowrap px-1'}
@@ -95,8 +91,8 @@ export default function Header() {
               )}
             </div>
 
-            <button onClick={() => setRegisterOpen(true)} className="btn-outline text-xs px-3 py-1.5">{t.login}</button>
-            <button onClick={() => navigate('/admin')} className="btn-primary text-xs px-3 py-1.5">{t.admin}</button>
+            <a href="https://strong-dory-enabled.ngrok-free.app/" target="_blank" rel="noopener noreferrer" className="btn-outline text-xs px-3 py-1.5">{t.login}</a>
+            <a href="https://strong-dory-enabled.ngrok-free.app/" target="_blank" rel="noopener noreferrer" className="btn-primary text-xs px-3 py-1.5">{t.admin}</a>
           </div>
 
           {/* Mobile menu button */}
@@ -115,8 +111,10 @@ export default function Header() {
               <a
                 key={item.name}
                 href={item.href}
+                target={item.external ? '_blank' : undefined}
+                rel={item.external ? 'noopener noreferrer' : undefined}
                 className={`block px-3 py-2 rounded-lg transition-colors ${item.highlight ? 'bg-primary text-white font-bold' : 'text-gray-700 hover:bg-light'}`}
-                onClick={(e) => { if (item.onClick) { e.preventDefault(); item.onClick(); } setIsOpen(false); }}
+                onClick={() => setIsOpen(false)}
               >
                 {item.name}
               </a>
@@ -141,8 +139,8 @@ export default function Header() {
               </div>
             </div>
 
-            <button onClick={() => { setRegisterOpen(true); setIsOpen(false); }} className="btn-outline w-full mt-2">{t.login}</button>
-            <button onClick={() => { navigate('/admin'); setIsOpen(false); }} className="btn-primary w-full mt-2">{t.admin}</button>
+            <a href="https://strong-dory-enabled.ngrok-free.app/" target="_blank" rel="noopener noreferrer" className="btn-outline w-full mt-2 block text-center">{t.login}</a>
+            <a href="https://strong-dory-enabled.ngrok-free.app/" target="_blank" rel="noopener noreferrer" className="btn-primary w-full mt-2 block text-center">{t.admin}</a>
           </div>
         )}
       </nav>
@@ -153,8 +151,6 @@ export default function Header() {
       )}
     </header>
 
-    {registerOpen && <RegisterModal onClose={() => setRegisterOpen(false)} />}
-    {trackingOpen && <TrackingModal onClose={() => setTrackingOpen(false)} />}
-    </>
+</>
   );
 }

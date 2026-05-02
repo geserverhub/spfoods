@@ -29,6 +29,10 @@ export default function Hero() {
               {t.heroDesc}
             </p>
 
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {t.heroLongDesc}
+            </p>
+
             <div className="flex flex-wrap gap-4 pt-8">
               <button className="btn-primary flex items-center space-x-2">
                 <span>{t.orderBtn}</span>

@@ -43,12 +43,25 @@ const i18n = {
     empUnit: '명',
     footer: 'SP FOODS CO.,LTD · 내부 시스템 · 권한자 전용',
   },
+  my: {
+    title: 'Admin Dashboard',
+    subtitle: 'စီမံခန့်ခွဲမည့် ဌာနကို ရွေးချယ်ပါ',
+    system: 'အတွင်းပိုင်း စီမံခန့်ခွဲမှု စနစ်',
+    logout: 'ထွက်သည်',
+    employees: 'ဝန်ထမ်းစုစုပေါင်း',
+    registrations: 'မှတ်ပုံတင်သူများ',
+    systemStatus: 'စနစ်အခြေအနေ',
+    normal: 'ပုံမှန်',
+    empUnit: 'ဦး',
+    footer: 'SP FOODS CO.,LTD · အတွင်းပိုင်း စနစ် · ခွင့်ပြုထားသူများသာ',
+  },
 };
 
 const LANGS = [
   { code: 'th', label: 'ไทย' },
   { code: 'en', label: 'EN' },
   { code: 'ko', label: '한국어' },
+  { code: 'my', label: 'မြန်မာ' },
 ];
 
 export default function AdminDashboard() {
