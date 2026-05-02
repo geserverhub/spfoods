@@ -91,8 +91,8 @@ export default function Header() {
               )}
             </div>
 
-            <a href="https://strong-dory-enabled.ngrok-free.app/register" target="_blank" rel="noopener noreferrer" className="btn-outline text-xs px-3 py-1.5">{t.login}</a>
-            <a href="https://strong-dory-enabled.ngrok-free.app/admin" target="_blank" rel="noopener noreferrer" className="btn-primary text-xs px-3 py-1.5">{t.admin}</a>
+            <a href="https://strong-dory-enabled.ngrok-free.app/register-sp" target="_blank" rel="noopener noreferrer" className="btn-outline text-xs px-3 py-1.5">{t.login}</a>
+            <a href="https://strong-dory-enabled.ngrok-free.app/admin-sp" target="_blank" rel="noopener noreferrer" className="btn-primary text-xs px-3 py-1.5">{t.admin}</a>
           </div>
 
           {/* Mobile menu button */}
@@ -139,8 +139,8 @@ export default function Header() {
               </div>
             </div>
 
-            <a href="https://strong-dory-enabled.ngrok-free.app/register" target="_blank" rel="noopener noreferrer" className="btn-outline w-full mt-2 block text-center">{t.login}</a>
-            <a href="https://strong-dory-enabled.ngrok-free.app/admin" target="_blank" rel="noopener noreferrer" className="btn-primary w-full mt-2 block text-center">{t.admin}</a>
+            <a href="https://strong-dory-enabled.ngrok-free.app/register-sp" target="_blank" rel="noopener noreferrer" className="btn-outline w-full mt-2 block text-center">{t.login}</a>
+            <a href="https://strong-dory-enabled.ngrok-free.app/admin-sp" target="_blank" rel="noopener noreferrer" className="btn-primary w-full mt-2 block text-center">{t.admin}</a>
           </div>
         )}
       </nav>
