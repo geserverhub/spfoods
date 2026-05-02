@@ -38,7 +38,7 @@ function PublicSite() {
 
 function RequireAdminAuth({ children }) {
   const token = sessionStorage.getItem('adminToken');
-  if (!token) return <Navigate to="/admin-sp" replace />;
+  if (!token) return <Navigate to="/sp/admin-sp" replace />;
   return children;
 }
 
@@ -47,12 +47,12 @@ export default function App() {
     <LanguageProvider>
       <Routes>
         <Route path="/" element={<PublicSite />} />
-        <Route path="/register-sp" element={<RegisterPage />} />
-        <Route path="/admin-sp" element={<AdminLoginPage />} />
-        <Route path="/admin-sp/dashboard" element={
+        <Route path="/sp/register-sp" element={<RegisterPage />} />
+        <Route path="/sp/admin-sp" element={<AdminLoginPage />} />
+        <Route path="/sp/admin-sp/dashboard" element={
           <RequireAdminAuth><AdminDashboard /></RequireAdminAuth>
         } />
-        <Route path="/admin-sp/dept/:deptId" element={
+        <Route path="/sp/admin-sp/dept/:deptId" element={
           <RequireAdminAuth><DeptDashboard /></RequireAdminAuth>
         } />
         <Route path="*" element={<Navigate to="/" replace />} />

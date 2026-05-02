@@ -11,7 +11,7 @@ export default function AdminLoginPage() {
 
   useEffect(() => {
     if (sessionStorage.getItem('adminToken')) {
-      navigate('/admin-sp/dashboard', { replace: true });
+      navigate('/sp/admin-sp/dashboard', { replace: true });
     }
   }, [navigate]);
 
@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
         setError(data.error || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
       } else {
         sessionStorage.setItem('adminToken', data.token);
-        navigate('/admin-sp/dashboard');
+        navigate('/sp/admin-sp/dashboard');
       }
     } catch {
       setError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
           </div>
           <h2 className="text-xl font-bold">ระบบจัดการ Admin</h2>
           <p className="text-gray-400 text-sm mt-1">SP FOODS CO.,LTD</p>
-          <p className="text-gray-500 text-xs mt-1 font-mono">/admin-sp</p>
+          <p className="text-gray-500 text-xs mt-1 font-mono">/sp/admin-sp</p>
         </div>
 
         {/* Form */}
