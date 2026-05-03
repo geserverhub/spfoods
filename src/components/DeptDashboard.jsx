@@ -13,6 +13,8 @@ import CustomersList from './forms/CustomersList';
 import SalesOrdersList from './forms/SalesOrdersList';
 import ContractPanel from './forms/ContractPanel';
 import ContractsList from './forms/ContractsList';
+import SalesOrdersCRM from './forms/SalesOrdersCRM';
+import FeedbackPanel from './forms/FeedbackPanel';
 
 const deptMenus = {
   accounting: {
@@ -296,7 +298,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
 
           {/* Page Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className={(active === 'registrations_report' || active === 'contracts_list' || active === 'sales_orders_list') ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
+            <div className={(active === 'registrations_report' || active === 'contracts_list' || active === 'sales_orders_list' || active === 'products_list' || active === 'feedback') ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
               <div className="flex items-center gap-3 mb-6">
                 {ActiveIcon && (
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${dept.color} flex items-center justify-center shadow`}>
@@ -327,6 +329,10 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 <SalesOrdersList token={token} lang={lang} />
               ) : active === 'contracts_list' ? (
                 <ContractsList token={token} lang={lang} />
+              ) : active === 'crm' ? (
+                <SalesOrdersCRM token={token} lang={lang} />
+              ) : active === 'feedback' ? (
+                <FeedbackPanel token={token} lang={lang} deptColor={dept.color} />
               ) : active === 'sales_order' ? (
                 <SalesOrder token={token} lang={lang} deptColor={dept.color} />
               ) : active === 'contract' ? (

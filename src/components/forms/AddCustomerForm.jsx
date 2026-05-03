@@ -47,6 +47,7 @@ const CURRENCIES = [
   { value: 'THB', label: '฿ บาท (THB)',   flag: '🇹🇭' },
   { value: 'KRW', label: '₩ วอน (KRW)',   flag: '🇰🇷' },
   { value: 'USD', label: '$ ดอลลาร์ (USD)', flag: '🇺🇸' },
+  { value: 'CNY', label: '¥ หยวน (CNY)',  flag: '🇨🇳' },
 ];
 
 const makeEmpty = (lang) => ({ customer_code: '', customer_name: '', contact_name: '', phone: '', email: '', address: '', subdistrict: '', district: '', province: '', country: DEFAULT_COUNTRY[lang] || 'ไทย', tax_id: '', payment_type: 'cash', currency: 'THB', credit_limit: '', credit_days: '30', note: '' });

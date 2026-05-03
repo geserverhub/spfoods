@@ -101,7 +101,7 @@ async function generateContractNo(connection = pool) {
   const ymd = now.getFullYear().toString()
     + String(now.getMonth() + 1).padStart(2, '0')
     + String(now.getDate()).padStart(2, '0');
-  const prefix = `CNT-${ymd}-`;
+  const prefix = `CNT${ymd}-`;
   const [[row]] = await connection.query(
     `SELECT contract_no FROM contracts WHERE contract_no LIKE ? ORDER BY contract_no DESC LIMIT 1`,
     [`${prefix}%`]
@@ -126,7 +126,8 @@ router.get('/search', requireAuth, async (req, res) => {
     await ensureContractTables();
     const q = `%${req.query.q || ''}%`;
     const [rows] = await pool.query(
-      `SELECT id, contract_no, customer_name, title, start_date, end_date, value, status
+      `SELECT id, contract_no, customer_id, customer_name, customer_address, customer_tax_id,
+              title, start_date, end_date, value, status
        FROM contracts WHERE (contract_no LIKE ? OR customer_name LIKE ? OR title LIKE ?) AND status = 'active'
        ORDER BY created_at DESC LIMIT 20`,
       [q, q, q]

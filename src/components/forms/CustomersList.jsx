@@ -3,33 +3,48 @@ import { useEffect, useState } from 'react'
 import { Eye, Printer, X } from 'lucide-react'
 
 const i18n = {
-  th: { title:'รายชื่อลูกค้า', code:'รหัส', name:'ชื่อลูกค้า', contact:'ผู้ติดต่อ', phone:'โทรศัพท์', email:'อีเมล', balance:'ยอดค้าง', credit:'วงเงิน', empty:'ไม่มีข้อมูล', total:'รายการทั้งหมด' },
-  en: { title:'Customers List', code:'Code', name:'Customer Name', contact:'Contact', phone:'Phone', email:'Email', balance:'Balance', credit:'Credit Limit', empty:'No data', total:'Total' },
-  ko: { title:'고객 목록', code:'코드', name:'고객명', contact:'담당자', phone:'전화번호', email:'이메일', balance:'잔액', credit:'신용한도', empty:'데이터 없음', total:'전체' },
+  th: {
+    title:'รายชื่อลูกค้า', code:'รหัส', name:'ชื่อลูกค้า', contact:'ผู้ติดต่อ', phone:'โทรศัพท์', email:'อีเมล', balance:'ยอดค้าง', credit:'วงเงิน', empty:'ไม่มีข้อมูล', total:'รายการทั้งหมด',
+    loading:'กำลังโหลด...', searchPlaceholder:'ค้นหา...', action:'การจัดการ', view:'วิว', print:'ปริ้น', close:'ปิด',
+    detailTitle:'รายละเอียดลูกค้า', customerCode:'รหัสลูกค้า', customerName:'ชื่อลูกค้า', taxId:'เลขภาษี', address:'ที่อยู่',
+    balanceDue:'ยอดค้างชำระ', creditLimit:'วงเงินเครดิต', creditDays:'วันเครดิต', note:'หมายเหตุ', dayUnit:'วัน'
+  },
+  en: {
+    title:'Customers List', code:'Code', name:'Customer Name', contact:'Contact', phone:'Phone', email:'Email', balance:'Balance', credit:'Credit Limit', empty:'No data', total:'Total',
+    loading:'Loading...', searchPlaceholder:'Search...', action:'Action', view:'View', print:'Print', close:'Close',
+    detailTitle:'Customer Details', customerCode:'Customer Code', customerName:'Customer Name', taxId:'Tax ID', address:'Address',
+    balanceDue:'Outstanding Balance', creditLimit:'Credit Limit', creditDays:'Credit Days', note:'Note', dayUnit:'days'
+  },
+  ko: {
+    title:'고객 목록', code:'코드', name:'고객명', contact:'담당자', phone:'전화번호', email:'이메일', balance:'잔액', credit:'신용한도', empty:'데이터 없음', total:'전체',
+    loading:'로딩 중...', searchPlaceholder:'검색...', action:'작업', view:'보기', print:'인쇄', close:'닫기',
+    detailTitle:'고객 상세', customerCode:'고객 코드', customerName:'고객명', taxId:'사업자번호', address:'주소',
+    balanceDue:'미수금', creditLimit:'신용 한도', creditDays:'신용 일수', note:'메모', dayUnit:'일'
+  },
 }
 const fmt = n => parseFloat(n || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })
 
-function PrintView({ row, onClose }) {
+function PrintView({ row, onClose, t }) {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
       <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl" id="print-area">
         <div className="flex justify-between items-start mb-6 print:hidden">
-          <h3 className="font-bold text-lg text-gray-900">รายละเอียดลูกค้า</h3>
+          <h3 className="font-bold text-lg text-gray-900">{t.detailTitle}</h3>
           <button onClick={onClose}><X className="w-5 h-5 text-gray-500" /></button>
         </div>
         <div className="space-y-3 text-sm">
           {[
-            ['รหัสลูกค้า', row.customer_code],
-            ['ชื่อลูกค้า', row.customer_name],
-            ['ผู้ติดต่อ', row.contact_person || '—'],
-            ['โทรศัพท์', row.phone || '—'],
-            ['อีเมล', row.email || '—'],
-            ['เลขภาษี', row.tax_id || '—'],
-            ['ที่อยู่', row.address || '—'],
-            ['ยอดค้างชำระ', fmt(row.balance) + ' ฿'],
-            ['วงเงินเครดิต', fmt(row.credit_limit) + ' ฿'],
-            ['วันเครดิต', (row.credit_days || 0) + ' วัน'],
-            ['หมายเหตุ', row.note || '—'],
+            [t.customerCode, row.customer_code],
+            [t.customerName, row.customer_name],
+            [t.contact, row.contact_person || '—'],
+            [t.phone, row.phone || '—'],
+            [t.email, row.email || '—'],
+            [t.taxId, row.tax_id || '—'],
+            [t.address, row.address || '—'],
+            [t.balanceDue, fmt(row.balance) + ' ฿'],
+            [t.creditLimit, fmt(row.credit_limit) + ' ฿'],
+            [t.creditDays, (row.credit_days || 0) + ' ' + t.dayUnit],
+            [t.note, row.note || '—'],
           ].map(([k, v]) => (
             <div key={k} className="flex gap-4 border-b border-gray-100 pb-2">
               <span className="text-gray-500 w-32 shrink-0">{k}</span>
@@ -39,9 +54,9 @@ function PrintView({ row, onClose }) {
         </div>
         <div className="mt-6 flex gap-3 print:hidden">
           <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">
-            <Printer className="w-4 h-4" /> พิมพ์
+            <Printer className="w-4 h-4" /> {t.print}
           </button>
-          <button onClick={onClose} className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-gray-50">ปิด</button>
+          <button onClick={onClose} className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-gray-50">{t.close}</button>
         </div>
       </div>
     </div>
@@ -67,16 +82,16 @@ export default function CustomersList({ token, lang }) {
     (r.phone || '').includes(search)
   )
 
-  if (loading) return <p className="text-center py-10 text-gray-500">Loading...</p>
+  if (loading) return <p className="text-center py-10 text-gray-500">{t.loading}</p>
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      {view && <PrintView row={view} onClose={() => setView(null)} />}
+      {view && <PrintView row={view} onClose={() => setView(null)} t={t} />}
       <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
         <h3 className="font-bold text-gray-900">{t.title}</h3>
         <div className="flex items-center gap-3">
           <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{t.total}: {filtered.length}</span>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ค้นหา..." className="text-sm border border-gray-200 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-200 w-40" />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t.searchPlaceholder} className="text-sm border border-gray-200 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-200 w-40" />
         </div>
       </div>
       {filtered.length === 0 ? <p className="text-center py-12 text-gray-400">{t.empty}</p> : (
@@ -90,7 +105,7 @@ export default function CustomersList({ token, lang }) {
                 <th className="px-4 py-3 text-left">{t.email}</th>
                 <th className="px-4 py-3 text-right">{t.balance}</th>
                 <th className="px-4 py-3 text-right">{t.credit}</th>
-                <th className="px-4 py-3 text-center">Action</th>
+                <th className="px-4 py-3 text-center">{t.action}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -105,10 +120,10 @@ export default function CustomersList({ token, lang }) {
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <button onClick={() => setView(r)} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 font-medium">
-                        <Eye className="w-3.5 h-3.5" /> วิว
+                        <Eye className="w-3.5 h-3.5" /> {t.view}
                       </button>
                       <button onClick={() => { setView(r); setTimeout(window.print, 300) }} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium">
-                        <Printer className="w-3.5 h-3.5" /> ปริ้น
+                        <Printer className="w-3.5 h-3.5" /> {t.print}
                       </button>
                     </div>
                   </td>

@@ -19,12 +19,30 @@ const i18n = {
     selectCustomer: 'ค้นหาและเลือกลูกค้าเพื่อเริ่มต้น',
     soNo: 'เลขที่ SO',
     amount: 'ยอดรวม',
+    no: 'ลำดับ',
+    updatedDate: 'วันที่อัปเดต',
+    soStatus: 'สถานะ SO',
+    contractNo: 'เลขที่สัญญา',
     loading: 'กำลังโหลด...',
     success: '✓ บันทึกสำเร็จ',
     error: 'เกิดข้อผิดพลาด',
     searching: 'กำลังค้นหา...',
     noResults: 'ไม่พบลูกค้า',
     changeCustomer: 'เปลี่ยนลูกค้า',
+    selectSalesOrder: 'เลือกใบสั่งขาย (ถ้ามี)',
+    selectSalesOrderPlaceholder: '— เลือกใบสั่งขาย —',
+    noContractOnSO: 'SO นี้ยังไม่ผูกเลขสัญญา',
+    allDbRecords: 'รายการบันทึกทั้งหมดจากฐานข้อมูล',
+    dbCustomerList: 'รายชื่อลูกค้าจากฐานข้อมูล',
+    pendingCustomers: 'ลูกค้าที่ติดตามค้างอยู่',
+    choose: 'เลือก',
+    customerCode: 'รหัสลูกค้า',
+    customer: 'ลูกค้า',
+    phone: 'โทรศัพท์',
+    lastFollowUp: 'ติดตามล่าสุด',
+    followUpStage: 'สถานะติดตาม',
+    pendingEmpty: 'ยังไม่พบลูกค้าที่ติดตามค้างอยู่',
+    loadFailed: 'ไม่สามารถโหลดข้อมูลจากฐานข้อมูลได้',
   },
   en: {
     searchPlaceholder: 'Search code / name / phone...',
@@ -42,12 +60,30 @@ const i18n = {
     selectCustomer: 'Search and select a customer to begin',
     soNo: 'SO No.',
     amount: 'Total',
+    no: 'No.',
+    updatedDate: 'Updated Date',
+    soStatus: 'SO Status',
+    contractNo: 'Contract No.',
     loading: 'Loading...',
     success: '✓ Record saved',
     error: 'An error occurred',
     searching: 'Searching...',
     noResults: 'No customers found',
     changeCustomer: 'Change',
+    selectSalesOrder: 'Select Sales Order (optional)',
+    selectSalesOrderPlaceholder: '— Select Sales Order —',
+    noContractOnSO: 'This SO has no contract number',
+    allDbRecords: 'All records from database',
+    dbCustomerList: 'Customer list from database',
+    pendingCustomers: 'Customers with pending follow-up',
+    choose: 'Select',
+    customerCode: 'Customer Code',
+    customer: 'Customer',
+    phone: 'Phone',
+    lastFollowUp: 'Last follow-up',
+    followUpStage: 'Follow-up stage',
+    pendingEmpty: 'No pending follow-up customers found',
+    loadFailed: 'Failed to load database records',
   },
   ko: {
     searchPlaceholder: '코드 / 고객명 / 전화번호 검색...',
@@ -65,12 +101,30 @@ const i18n = {
     selectCustomer: '고객을 검색하여 시작하세요',
     soNo: 'SO번호',
     amount: '합계',
+    no: '순번',
+    updatedDate: '업데이트 날짜',
+    soStatus: 'SO 상태',
+    contractNo: '계약 번호',
     loading: '로딩 중...',
     success: '✓ 저장되었습니다',
     error: '오류가 발생했습니다',
     searching: '검색 중...',
     noResults: '고객을 찾을 수 없음',
     changeCustomer: '변경',
+    selectSalesOrder: '판매 주문 선택 (선택)',
+    selectSalesOrderPlaceholder: '— 판매 주문 선택 —',
+    noContractOnSO: '이 SO에는 계약 번호가 없습니다',
+    allDbRecords: '데이터베이스 전체 기록',
+    dbCustomerList: '데이터베이스 고객 목록',
+    pendingCustomers: '후속 관리가 남은 고객',
+    choose: '선택',
+    customerCode: '고객 코드',
+    customer: '고객',
+    phone: '전화번호',
+    lastFollowUp: '최근 추적',
+    followUpStage: '추적 상태',
+    pendingEmpty: '후속 관리가 필요한 고객이 없습니다',
+    loadFailed: '데이터베이스 정보를 불러오지 못했습니다',
   },
 }
 
@@ -95,6 +149,20 @@ const STAGES = [
 
 const headers = token => ({ Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' })
 const fmt = n => parseFloat(n || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })
+const DATE_LOCALE = { th: 'th-TH', en: 'en-US', ko: 'ko-KR' }
+
+const SO_STATUS_META = {
+  draft: 'bg-gray-100 text-gray-700',
+  confirmed: 'bg-blue-100 text-blue-700',
+  delivered: 'bg-green-100 text-green-700',
+  cancelled: 'bg-red-100 text-red-700',
+}
+
+const SO_STATUS_LABEL = {
+  th: { draft: 'ร่าง', confirmed: 'ยืนยันแล้ว', delivered: 'ส่งแล้ว', cancelled: 'ยกเลิก' },
+  en: { draft: 'Draft', confirmed: 'Confirmed', delivered: 'Delivered', cancelled: 'Cancelled' },
+  ko: { draft: '임시', confirmed: '확정', delivered: '배송완료', cancelled: '취소' },
+}
 
 export default function SalesOrdersCRM({ token, lang }) {
   const t = i18n[lang] || i18n.th
@@ -108,6 +176,7 @@ export default function SalesOrdersCRM({ token, lang }) {
   const [salesOrders, setSalesOrders]   = useState([])
   const [loadingData, setLoadingData]   = useState(false)
   const [showForm, setShowForm]         = useState(false)
+  const [selectedSOId, setSelectedSOId] = useState('')
   const [formType, setFormType]         = useState('')
   const [formStage, setFormStage]       = useState('pre-sale')
   const [formDesc, setFormDesc]         = useState('')
@@ -115,16 +184,44 @@ export default function SalesOrdersCRM({ token, lang }) {
   const [submitting, setSubmitting]     = useState(false)
   const [message, setMessage]           = useState('')
   const [summary, setSummary]           = useState([])
+  const [summaryLoading, setSummaryLoading] = useState(false)
+  const [summaryError, setSummaryError] = useState('')
   const [editRow, setEditRow]           = useState(null)   // { id, field, value }
   const [savingRow, setSavingRow]       = useState(null)
   const dropRef = useRef(null)
 
+  // Contract autocomplete
+  const [formContract, setFormContract]       = useState('')
+  const [contractResults, setContractResults] = useState([])
+  const [showContractDrop, setShowContractDrop] = useState(false)
+  const [contractSearching, setContractSearching] = useState(false)
+  const [contractError, setContractError]     = useState(false)
+  const [skipContractSearchOnce, setSkipContractSearchOnce] = useState(false)
+  const contractDropRef = useRef(null)
+
   async function loadSummary() {
+    setSummaryLoading(true)
+    setSummaryError('')
     try {
-      const r = await apiFetch('/api/crm-tracking/summary', { headers: headers(token) })
+      const r = await apiFetch('/api/crm-tracking/records', { headers: headers(token) })
+      if (!r.ok) throw new Error('load failed')
       const d = await r.json()
       setSummary(Array.isArray(d) ? d : [])
-    } catch {}
+    } catch {
+      setSummary([])
+      setSummaryError(t.loadFailed)
+    } finally {
+      setSummaryLoading(false)
+    }
+  }
+
+  async function loadCustomerData(customerId) {
+    if (!customerId) return
+    const r = await apiFetch(`/api/crm-tracking/customer/${customerId}`, { headers: headers(token) })
+    const d = await r.json()
+    setCustomer(d.customer)
+    setTrackings(d.trackings || [])
+    setSalesOrders(d.salesOrders || [])
   }
 
   async function saveInline(trackingId, field, value) {
@@ -132,7 +229,7 @@ export default function SalesOrdersCRM({ token, lang }) {
     try {
       const row = summary.find(s => s.tracking_id === trackingId)
       if (!row) return
-      await apiFetch(`/api/crm-tracking/${trackingId}`, {
+      const r = await apiFetch(`/api/crm-tracking/${trackingId}`, {
         method: 'PUT',
         headers: headers(token),
         body: JSON.stringify({
@@ -140,10 +237,18 @@ export default function SalesOrdersCRM({ token, lang }) {
           service_stage:    field === 'service_stage'    ? value : row.service_stage,
           description:      field === 'description'      ? value : row.description,
           notes:            field === 'notes'             ? value : row.notes,
+          contract_no:      field === 'contract_no'      ? value : row.contract_no,
         }),
       })
-      setSummary(prev => prev.map(s => s.tracking_id === trackingId ? { ...s, [field]: value } : s))
-    } catch {}
+      const d = await r.json().catch(() => ({}))
+      if (!r.ok || !d.success) throw new Error(d.error || t.error)
+      await loadSummary()
+      await loadCustomerData(customer?.id)
+      setMessage(t.success)
+      setTimeout(() => setMessage(''), 2000)
+    } catch {
+      setMessage(t.error)
+    }
     setSavingRow(null)
     setEditRow(null)
   }
@@ -154,7 +259,37 @@ export default function SalesOrdersCRM({ token, lang }) {
     return () => document.removeEventListener('mousedown', h)
   }, [])
 
-  useEffect(() => { loadSummary() }, [token])
+  useEffect(() => {
+    loadSummary()
+  }, [token])
+
+  useEffect(() => {
+    const h = e => { if (contractDropRef.current && !contractDropRef.current.contains(e.target)) setShowContractDrop(false) }
+    document.addEventListener('mousedown', h)
+    return () => document.removeEventListener('mousedown', h)
+  }, [])
+
+  useEffect(() => {
+    if (skipContractSearchOnce) {
+      setSkipContractSearchOnce(false)
+      return
+    }
+    if (!formContract.trim()) { setContractResults([]); setShowContractDrop(false); return }
+    setContractError(false)
+    const t2 = setTimeout(() => searchContracts(formContract), 300)
+    return () => clearTimeout(t2)
+  }, [formContract, skipContractSearchOnce])
+
+  async function searchContracts(q) {
+    setContractSearching(true)
+    try {
+      const r = await apiFetch(`/api/crm-tracking/contracts/search?q=${encodeURIComponent(q)}`, { headers: headers(token) })
+      const d = await r.json()
+      setContractResults(Array.isArray(d) ? d : [])
+      setShowContractDrop(true)
+    } catch { setContractResults([]) }
+    finally { setContractSearching(false) }
+  }
 
   useEffect(() => {
     if (!query.trim()) { setResults([]); setShowDrop(false); return }
@@ -177,12 +312,11 @@ export default function SalesOrdersCRM({ token, lang }) {
 
   async function selectCustomer(c) {
     setQuery(''); setResults([]); setShowDrop(false); setShowForm(false)
+    setSelectedSOId(''); setFormContract(''); setContractError(false)
     setCustomer(c); setTrackings([]); setSalesOrders([])
     setLoadingData(true)
     try {
-      const r = await apiFetch(`/api/crm-tracking/customer/${c.id}`, { headers: headers(token) })
-      const d = await r.json()
-      setCustomer(d.customer); setTrackings(d.trackings || []); setSalesOrders(d.salesOrders || [])
+      await loadCustomerData(c.id)
     } catch {}
     finally { setLoadingData(false) }
   }
@@ -190,6 +324,7 @@ export default function SalesOrdersCRM({ token, lang }) {
   async function handleSubmit(e) {
     e.preventDefault()
     if (!formType) { setMessage('กรุณาเลือกประเภทการติดตาม'); return }
+    if (!formContract.trim()) { setContractError(true); setMessage('กรุณาแนบเลขที่สัญญาซื้อขาย (CNTyyyyymmdd-00001) ก่อนบันทึก'); return }
     setSubmitting(true); setMessage('')
     try {
       const r = await apiFetch('/api/crm-tracking', {
@@ -197,6 +332,7 @@ export default function SalesOrdersCRM({ token, lang }) {
         headers: headers(token),
         body: JSON.stringify({
           customer_id: customer.id,
+          contract_no: formContract.trim() || null,
           interaction_type: formType,
           service_stage: formStage,
           description: formDesc,
@@ -206,7 +342,7 @@ export default function SalesOrdersCRM({ token, lang }) {
       const d = await r.json()
       if (d.success) {
         setMessage(t.success)
-        setFormType(''); setFormStage('pre-sale'); setFormDesc(''); setFormNotes(''); setShowForm(false)
+        setFormType(''); setFormStage('pre-sale'); setFormDesc(''); setFormNotes(''); setFormContract(''); setContractError(false); setSelectedSOId(''); setShowForm(false)
         const r2 = await apiFetch(`/api/crm-tracking/customer/${customer.id}`, { headers: headers(token) })
         const d2 = await r2.json()
         setTrackings(d2.trackings || []); setSalesOrders(d2.salesOrders || [])
@@ -222,15 +358,65 @@ export default function SalesOrdersCRM({ token, lang }) {
   async function handleDelete(id) {
     if (!confirm('ลบบันทึกนี้?')) return
     try {
-      await apiFetch(`/api/crm-tracking/${id}`, { method: 'DELETE', headers: headers(token) })
-      setTrackings(prev => prev.filter(r => r.id !== id))
-      loadSummary()
-    } catch {}
+      const r = await apiFetch(`/api/crm-tracking/${id}`, { method: 'DELETE', headers: headers(token) })
+      const d = await r.json().catch(() => ({}))
+      if (!r.ok || !d.success) throw new Error(d.error || t.error)
+      await loadSummary()
+      await loadCustomerData(customer?.id)
+      setMessage(t.success)
+      setTimeout(() => setMessage(''), 2000)
+    } catch {
+      setMessage(t.error)
+    }
   }
 
   const stageMeta  = v => STAGES.find(s => s.value === v) || STAGES[0]
   const typeLabel  = v => { const f = INTERACTION_TYPES.find(x => x.value === v); return f ? (f[lang] || f.en) : v }
   const stageLabel = v => { const f = stageMeta(v); return f[lang] || f.en }
+  const dateLocale = DATE_LOCALE[lang] || 'th-TH'
+  const sortedSalesOrders = [...salesOrders].sort((a, b) => {
+    const ad = new Date(a?.created_at || 0).getTime()
+    const bd = new Date(b?.created_at || 0).getTime()
+    return bd - ad
+  })
+  const dbCustomers = Object.values(
+    summary.reduce((acc, row) => {
+      const customerId = row?.id
+      if (!customerId || acc[customerId]) return acc
+      acc[customerId] = {
+        id: customerId,
+        customer_code: row.customer_code,
+        customer_name: row.customer_name,
+        phone: row.phone,
+      }
+      return acc
+    }, {})
+  ).sort((a, b) => String(a.customer_name || '').localeCompare(String(b.customer_name || '')))
+
+  const latestSummaryByCustomer = Object.values(
+    summary.reduce((acc, row) => {
+      if (!row?.id) return acc
+      if (!acc[row.id]) acc[row.id] = row
+      return acc
+    }, {})
+  )
+
+  const pendingCustomers = latestSummaryByCustomer.filter(row => row.service_stage !== 'post-sale')
+
+  function handleSOChange(soId) {
+    setSelectedSOId(soId)
+    const picked = salesOrders.find(so => String(so.id) === String(soId))
+    if (!picked) return
+    if (picked.contract_no) {
+      setSkipContractSearchOnce(true)
+      setFormContract(picked.contract_no)
+      setContractError(false)
+      setShowContractDrop(false)
+      setContractResults([])
+    } else {
+      setFormContract('')
+    }
+  }
 
   return (
     <div className="space-y-5">
@@ -279,7 +465,7 @@ export default function SalesOrdersCRM({ token, lang }) {
       {summary.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="font-bold text-gray-900 text-sm">รายละเอียดลูกค้าที่กำลังติดตาม</h3>
+            <h3 className="font-bold text-gray-900 text-sm">{t.allDbRecords}</h3>
             <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">{summary.length} ราย</span>
           </div>
           <div className="overflow-x-auto">
@@ -287,6 +473,8 @@ export default function SalesOrdersCRM({ token, lang }) {
               <thead className="bg-gray-50 text-gray-700 font-bold uppercase">
                 <tr>
                   <th className="px-4 py-2.5 text-left">ลูกค้า</th>
+                  <th className="px-4 py-2.5 text-left whitespace-nowrap">เลขที่สัญญา</th>
+                  <th className="px-4 py-2.5 text-left whitespace-nowrap">เลขที่บิล</th>
                   <th className="px-4 py-2.5 text-left">ประเภทการติดตาม</th>
                   <th className="px-4 py-2.5 text-left">สถานะ</th>
                   <th className="px-4 py-2.5 text-left min-w-[180px]">รายละเอียด</th>
@@ -304,6 +492,30 @@ export default function SalesOrdersCRM({ token, lang }) {
                       <td className="px-4 py-2.5">
                         <p className="font-semibold text-gray-900">{row.customer_name}</p>
                         <p className="text-gray-400">{row.customer_code}</p>
+                      </td>
+
+                      {/* เลขที่สัญญา — inline input */}
+                      <td className="px-4 py-2.5 whitespace-nowrap">
+                        <input
+                          type="text"
+                          defaultValue={row.contract_no || ''}
+                          onBlur={e => saveInline(row.tracking_id, 'contract_no', e.target.value.trim() || null)}
+                          disabled={savingRow === row.tracking_id}
+                          placeholder="CNTyyyymmdd-00001"
+                          className="w-full min-w-[100px] border border-gray-200 rounded-lg px-2 py-1 text-xs font-mono text-purple-700 font-semibold focus:outline-none focus:ring-1 focus:ring-purple-300 disabled:opacity-50 placeholder-gray-300"
+                        />
+                      </td>
+
+                      {/* เลขที่บิล */}
+                      <td className="px-4 py-2.5 whitespace-nowrap">
+                        {row.latest_so_no ? (
+                          <span className="font-mono text-blue-700 font-semibold text-xs">{row.latest_so_no}</span>
+                        ) : (
+                          <span className="text-gray-300 text-xs">—</span>
+                        )}
+                        {row.so_count > 1 && (
+                          <p className="text-gray-400 text-xs mt-0.5">{row.so_count} ใบ</p>
+                        )}
                       </td>
 
                       {/* ประเภทการติดตาม — inline select */}
@@ -378,11 +590,109 @@ export default function SalesOrdersCRM({ token, lang }) {
         </div>
       )}
 
+      {/* Pending follow-up customers */}
+      <div className="bg-white rounded-2xl border border-amber-200 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-amber-100 flex items-center justify-between bg-amber-50/60">
+          <h3 className="font-bold text-amber-900 text-sm">{t.pendingCustomers}</h3>
+          <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">{pendingCustomers.length} ราย</span>
+        </div>
+
+        {summaryLoading ? (
+          <p className="text-sm text-center text-gray-500 py-8">{t.loading}</p>
+        ) : summaryError ? (
+          <p className="text-sm text-center text-red-500 py-8">{summaryError}</p>
+        ) : pendingCustomers.length === 0 ? (
+          <p className="text-sm text-center text-gray-400 py-8">{t.pendingEmpty}</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-amber-50 text-amber-900 font-bold uppercase">
+                <tr>
+                  <th className="px-4 py-2.5 text-left">{t.customerCode}</th>
+                  <th className="px-4 py-2.5 text-left">{t.customer}</th>
+                  <th className="px-4 py-2.5 text-left">{t.phone}</th>
+                  <th className="px-4 py-2.5 text-left whitespace-nowrap">{t.lastFollowUp}</th>
+                  <th className="px-4 py-2.5 text-left whitespace-nowrap">{t.followUpStage}</th>
+                  <th className="px-4 py-2.5 text-center">{t.choose}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-amber-100">
+                {pendingCustomers.map(c => (
+                  <tr key={`pending-${c.id}`} className="hover:bg-amber-50/50">
+                    <td className="px-4 py-2.5 font-mono text-gray-700">{c.customer_code || '—'}</td>
+                    <td className="px-4 py-2.5 font-semibold text-gray-900">{c.customer_name || '—'}</td>
+                    <td className="px-4 py-2.5 text-gray-600">{c.phone || '—'}</td>
+                    <td className="px-4 py-2.5 text-gray-600 whitespace-nowrap">
+                      {c.updated_at ? new Date(c.updated_at).toLocaleDateString(dateLocale) : '—'}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <span className={`px-2 py-1 rounded-full text-[11px] font-semibold ${stageMeta(c.service_stage).badge}`}>
+                        {stageLabel(c.service_stage)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 text-center">
+                      <button
+                        onClick={() => selectCustomer(c)}
+                        className="inline-flex items-center gap-1 text-xs px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 font-medium"
+                      >
+                        {t.choose}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       {/* No customer */}
       {!customer && (
-        <div className="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center">
-          <Search className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-          <p className="text-gray-400 font-medium text-sm">{t.selectCustomer}</p>
+        <div className="space-y-5">
+
+          {dbCustomers.length > 0 ? (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 className="font-bold text-gray-900 text-sm">{t.dbCustomerList}</h3>
+                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">{dbCustomers.length} ราย</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-gray-50 text-gray-700 font-bold uppercase">
+                    <tr>
+                      <th className="px-4 py-2.5 text-left">{t.customerCode}</th>
+                      <th className="px-4 py-2.5 text-left">{t.customer}</th>
+                      <th className="px-4 py-2.5 text-left">{t.phone}</th>
+                      <th className="px-4 py-2.5 text-center">{t.choose}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {dbCustomers.map(c => (
+                      <tr key={c.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-2.5 font-mono text-gray-700">{c.customer_code || '—'}</td>
+                        <td className="px-4 py-2.5 font-semibold text-gray-900">{c.customer_name || '—'}</td>
+                        <td className="px-4 py-2.5 text-gray-600">{c.phone || '—'}</td>
+                        <td className="px-4 py-2.5 text-center">
+                          <button
+                            onClick={() => selectCustomer(c)}
+                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 font-medium"
+                          >
+                            {t.choose}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          ) : (
+            <div className="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center">
+              <Search className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+              <p className="text-gray-400 font-medium text-sm">{t.selectCustomer}</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -432,6 +742,64 @@ export default function SalesOrdersCRM({ token, lang }) {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Sales order selector */}
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                      {t.selectSalesOrder}
+                    </label>
+                    <select
+                      value={selectedSOId}
+                      onChange={e => handleSOChange(e.target.value)}
+                      className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl text-xs text-gray-900 bg-white focus:outline-none focus:border-blue-400"
+                    >
+                      <option value="">{t.selectSalesOrderPlaceholder}</option>
+                      {sortedSalesOrders.map(so => (
+                        <option key={so.id} value={so.id}>
+                          {so.so_no} • {new Date(so.created_at).toLocaleDateString(dateLocale)} {so.contract_no ? `• ${so.contract_no}` : `• ${t.noContractOnSO}`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Contract number search */}
+                  <div ref={contractDropRef} className="relative">
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
+                      เลขที่สัญญาซื้อขาย <span className="text-red-400">*</span>
+                    </label>
+                    <div className={`flex items-center gap-2 border-2 rounded-xl px-3 py-2 transition-colors ${contractError ? 'border-red-400 bg-red-50' : 'border-gray-200 focus-within:border-purple-400'}`}>
+                      <Search className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                      <input
+                        value={formContract}
+                        onChange={e => { setFormContract(e.target.value); setContractError(false) }}
+                        placeholder="CNT20260503-00001"
+                        className="flex-1 text-xs outline-none bg-transparent placeholder-gray-400 font-mono"
+                      />
+                      {contractSearching && <span className="text-xs text-gray-400">...</span>}
+                      {formContract && (
+                        <button type="button" onClick={() => { setFormContract(''); setContractResults([]); setShowContractDrop(false) }}>
+                          <X className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600" />
+                        </button>
+                      )}
+                    </div>
+                    {contractError && (
+                      <p className="text-xs text-red-500 mt-1">⚠️ กรุณาแนบเลขที่สัญญาซื้อขาย (CNTyyyyymmdd-00001) ก่อนบันทึก</p>
+                    )}
+                    {showContractDrop && (
+                      <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
+                        {contractResults.length === 0 ? (
+                          <p className="text-xs text-center text-gray-400 py-4">ค้นหาจากฐานข้อมูลไม่ได้</p>
+                        ) : contractResults.map(c => (
+                          <button key={c.id} type="button"
+                            onClick={() => { setFormContract(c.contract_no); setContractResults([]); setShowContractDrop(false); setContractError(false) }}
+                            className="w-full text-left px-3 py-2.5 hover:bg-purple-50 border-b border-gray-50 last:border-0 transition-colors">
+                            <p className="font-mono font-semibold text-purple-700 text-xs">{c.contract_no}</p>
+                            <p className="text-gray-400 text-xs truncate">{c.customer_name}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   {/* Type picker */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
@@ -563,23 +931,33 @@ export default function SalesOrdersCRM({ token, lang }) {
             </div>
 
             {/* Sales Orders */}
-            {salesOrders.length > 0 && (
+            {sortedSalesOrders.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                 <h3 className="font-bold text-gray-900 mb-4">{t.relatedOrders}</h3>
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-100">
+                      <th className="text-left py-2 px-2 text-xs font-semibold text-gray-500 uppercase">{t.no}</th>
                       <th className="text-left py-2 px-2 text-xs font-semibold text-gray-500 uppercase">{t.soNo}</th>
-                      <th className="text-left py-2 px-2 text-xs font-semibold text-gray-500 uppercase">วันที่</th>
+                      <th className="text-left py-2 px-2 text-xs font-semibold text-gray-500 uppercase">{t.contractNo}</th>
+                      <th className="text-left py-2 px-2 text-xs font-semibold text-gray-500 uppercase">{t.updatedDate}</th>
+                      <th className="text-left py-2 px-2 text-xs font-semibold text-gray-500 uppercase">{t.soStatus}</th>
                       <th className="text-right py-2 px-2 text-xs font-semibold text-gray-500 uppercase">{t.amount}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {salesOrders.map(o => (
+                    {sortedSalesOrders.map((o, idx) => (
                       <tr key={o.id} className="border-b border-gray-50 hover:bg-gray-50">
+                        <td className="py-2.5 px-2 text-gray-500 text-xs">{idx + 1}</td>
                         <td className="py-2.5 px-2 font-mono text-blue-700 text-xs font-semibold">{o.so_no}</td>
+                        <td className="py-2.5 px-2 text-xs font-mono text-purple-700">{o.contract_no || '—'}</td>
                         <td className="py-2.5 px-2 text-gray-500 text-xs">
-                          {new Date(o.created_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : lang === 'en' ? 'en-US' : 'th-TH')}
+                          {new Date(o.created_at).toLocaleDateString(dateLocale)}
+                        </td>
+                        <td className="py-2.5 px-2 text-xs">
+                          <span className={`px-2 py-1 rounded-full font-medium ${SO_STATUS_META[o.status] || 'bg-gray-100 text-gray-600'}`}>
+                            {(SO_STATUS_LABEL[lang] || SO_STATUS_LABEL.th)[o.status] || o.status || '—'}
+                          </span>
                         </td>
                         <td className="py-2.5 px-2 text-right font-semibold text-gray-900">{fmt(o.total_amount)}</td>
                       </tr>

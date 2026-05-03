@@ -12,7 +12,7 @@ const i18n = {
     note: 'หมายเหตุ', submit: 'สร้างใบสั่งขาย', success: 'สร้างใบสั่งขายสำเร็จ',
     new: 'สร้างใหม่', payType: 'ประเภทการชำระเงิน', payTerm: 'เงื่อนไขการชำระ',
     contract: 'เลขที่สัญญาซื้อขาย', searchContract: 'ค้นหาสัญญา', attachContract: 'แนบสัญญา',
-    contractRequired: '⚠️ กรุณาแนบเลขที่สัญญาซื้อขาย (CNT-...) ก่อนบันทึก',
+    contractRequired: '⚠️ กรุณาแนบเลขที่สัญญาซื้อขาย (CNTyyyyymmdd-00001) ก่อนบันทึก',
     cash: 'เงินสด', credit: 'เครดิต', transfer: 'โอนเงิน',
   },
   en: {
@@ -24,7 +24,7 @@ const i18n = {
     note: 'Note', submit: 'Create Sales Order', success: 'Sales Order Created',
     new: 'New Order', payType: 'Payment Type', payTerm: 'Payment Terms',
     contract: 'Contract No.', searchContract: 'Search Contract', attachContract: 'Attach',
-    contractRequired: '⚠️ Please attach a Contract No. (CNT-...) before saving',
+    contractRequired: '⚠️ Please attach a Contract No. (CNTyyyymmdd-00001) before saving',
     cash: 'Cash', credit: 'Credit', transfer: 'Transfer',
   },
   ko: {
@@ -36,7 +36,7 @@ const i18n = {
     note: '메모', submit: '판매 주문 작성', success: '판매 주문 생성 완료',
     new: '새 주문', payType: '결제 유형', payTerm: '결제 조건',
     contract: '계약 번호', searchContract: '계약 검색', attachContract: '첨부',
-    contractRequired: '⚠️ 저장하기 전에 계약 번호 (CNT-...)를 첨부해 주세요',
+    contractRequired: '⚠️ 저장하기 전에 계약 번호 (CNTyyyymmdd-00001)를 첨부해 주세요',
     cash: '현금', credit: '외상', transfer: '계좌이체',
   },
 }
@@ -45,6 +45,7 @@ const CURRENCIES = [
   { value: 'THB', label: 'บาท',   symbol: '฿',  flag: '🇹🇭' },
   { value: 'KRW', label: '원',    symbol: '₩',  flag: '🇰🇷' },
   { value: 'USD', label: 'ดอลลาร์', symbol: '$', flag: '🇺🇸' },
+  { value: 'CNY', label: 'หยวน',  symbol: '¥', flag: '🇨🇳' },
 ]
 const emptyItem = () => ({ product_id: null, product_name: '', unit: 'กก.', qty: 1, price_unit: 0, discount: 0, amount: 0 })
 const today = () => new Date().toISOString().slice(0, 10)
@@ -56,6 +57,7 @@ export default function SalesOrder({ token, lang, deptColor }) {
   const [items, setItems]     = useState([emptyItem()])
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone]       = useState(null)
+  const [submitError, setSubmitError] = useState('')
   const [products, setProducts]   = useState([])
   const [customers, setCustomers] = useState([])
   const [currency, setCurrency]   = useState('THB')
@@ -65,6 +67,7 @@ export default function SalesOrder({ token, lang, deptColor }) {
   const [contractSearch, setContractSearch] = useState('')
   const [contractResults, setContractResults] = useState([])
   const [showContractSearch, setShowContractSearch] = useState(false)
+  const [contractSearching, setContractSearching] = useState(false)
 
   useEffect(() => {
     const h = { Authorization: `Bearer ${token}` }
@@ -74,18 +77,46 @@ export default function SalesOrder({ token, lang, deptColor }) {
   }, [token])
 
   const searchContracts = async q => {
+    const keyword = String(q || '').trim()
     setContractSearch(q)
-    if (!q) { setContractResults([]); return }
-    const res = await apiFetch(`/api/contracts/search?q=${encodeURIComponent(q)}`, { headers: { Authorization: `Bearer ${token}` } })
-    const data = await res.json()
-    setContractResults(Array.isArray(data) ? data : [])
+    setShowContractSearch(true)
+    if (!keyword) { setContractResults([]); return }
+    setContractSearching(true)
+    try {
+      const res = await apiFetch(`/api/contracts/search?q=${encodeURIComponent(keyword)}`, { headers: { Authorization: `Bearer ${token}` } })
+      const data = await res.json()
+      const rows = Array.isArray(data) ? data : []
+      setContractResults(rows)
+
+      // ถ้าพิมพ์เลขสัญญาตรงตัว ให้แนบอัตโนมัติทันที
+      const exact = rows.find(r => String(r.contract_no || '').toLowerCase() === keyword.toLowerCase())
+      if (exact) {
+        attachContract(exact)
+      }
+    } catch {
+      setContractResults([])
+    } finally {
+      setContractSearching(false)
+    }
   }
 
   const attachContract = c => {
+    const matchedCustomer = customers.find(x => Number(x.id) === Number(c.customer_id))
+      || customers.find(x => String(x.customer_name || '').trim() === String(c.customer_name || '').trim())
+
     setContractNo(c.contract_no)
     setContractSearch(c.contract_no)
     setContractResults([])
     setShowContractSearch(false)
+    setSubmitError('')
+
+    setForm(prev => ({
+      ...prev,
+      customer_id: c.customer_id || matchedCustomer?.id || prev.customer_id,
+      customer_name: c.customer_name || matchedCustomer?.customer_name || prev.customer_name,
+      customer_address: c.customer_address || matchedCustomer?.address || prev.customer_address,
+      customer_tax_id: c.customer_tax_id || matchedCustomer?.tax_id || prev.customer_tax_id,
+    }))
   }
 
   const selectCustomer = id => {
@@ -124,7 +155,12 @@ export default function SalesOrder({ token, lang, deptColor }) {
 
   const handleSubmit = async e => {
     e.preventDefault()
+    if (!contractNo.trim()) {
+      setSubmitError(t.contractRequired)
+      return
+    }
     setSubmitting(true)
+    setSubmitError('')
     try {
       const res = await apiFetch('/api/sales-orders', {
         method: 'POST',
@@ -140,8 +176,14 @@ export default function SalesOrder({ token, lang, deptColor }) {
         }),
       })
       const data = await res.json()
-      if (data.success) setDone(data.so_no)
-    } catch {}
+      if (data.success) {
+        setDone(data.so_no)
+      } else {
+        setSubmitError(data.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่')
+      }
+    } catch {
+      setSubmitError('เกิดข้อผิดพลาด กรุณาลองใหม่')
+    }
     setSubmitting(false)
   }
 
@@ -237,18 +279,28 @@ export default function SalesOrder({ token, lang, deptColor }) {
                   value={contractSearch}
                   onChange={e => searchContracts(e.target.value)}
                   onFocus={() => setShowContractSearch(true)}
-                  placeholder="CNT-2026-..."
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      searchContracts(contractSearch)
+                    }
+                  }}
+                  placeholder="CNT20260503-00001"
                   className="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-200"
                 />
-                <button type="button" onClick={() => searchContracts(contractSearch)}
+                <button type="button" onClick={() => { setShowContractSearch(true); searchContracts(contractSearch) }}
                   className="px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700">
                   🔍
                 </button>
               </div>
               {/* Dropdown ผลลัพธ์ */}
-              {contractResults.length > 0 && showContractSearch && (
+              {showContractSearch && contractSearch.trim() && (
                 <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                  {contractResults.map(c => (
+                  {contractSearching ? (
+                    <p className="px-4 py-3 text-xs text-gray-500">กำลังค้นหา...</p>
+                  ) : contractResults.length === 0 ? (
+                    <p className="px-4 py-3 text-xs text-red-500">ไม่พบเลขที่สัญญาจากคำค้น "{contractSearch}"</p>
+                  ) : contractResults.map(c => (
                     <button key={c.id} type="button" onClick={() => attachContract(c)}
                       className="w-full text-left px-4 py-2.5 hover:bg-blue-50 border-b border-gray-100 last:border-0">
                       <p className="font-mono text-xs font-bold text-blue-700">{c.contract_no}</p>
@@ -259,6 +311,8 @@ export default function SalesOrder({ token, lang, deptColor }) {
               )}
               {contractNo ? (
                 <p className="mt-1 text-xs text-green-700 font-medium">✓ แนบสัญญา: {contractNo}</p>
+              ) : contractSearch.trim() ? (
+                <p className="mt-1 text-xs text-amber-600 font-medium">พิมพ์แล้วกด 🔍 หรือเลือกจากรายการเพื่อแนบสัญญา</p>
               ) : (
                 <p className="mt-1 text-xs text-red-500 font-medium">{t.contractRequired}</p>
               )}
@@ -424,6 +478,11 @@ export default function SalesOrder({ token, lang, deptColor }) {
 
       {/* Submit */}
       <div className="flex justify-end">
+        {submitError && (
+          <div className="mb-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+            {submitError}
+          </div>
+        )}
         <button
           type="submit"
           disabled={submitting || !contractNo || items.every(it => !it.product_name)}
