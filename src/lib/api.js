@@ -1,5 +1,3 @@
-const BASE = '/sp-api'
-
-export function apiFetch(path, options) {
-  return fetch(`${BASE}${path}`, options)
+export function apiFetch(url, options = {}) {
+  return fetch(url, options);
 }
