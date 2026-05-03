@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { X, ChevronRight, Plus, FileText, Printer, BarChart2, Users, RefreshCw, Receipt, CreditCard, BookOpen, ScrollText, ArrowLeft, Package } from 'lucide-react';
 import { deptMeta, deptI18n } from '../config/adminDepts';
@@ -11,6 +11,7 @@ import SalesOrder from './forms/SalesOrder';
 import ProductsList from './forms/ProductsList';
 import CustomersList from './forms/CustomersList';
 import SalesOrdersList from './forms/SalesOrdersList';
+import ContractPanel from './forms/ContractPanel';
 
 const deptMenus = {
   accounting: {
@@ -191,9 +192,21 @@ export default function DeptDashboard() {
 }
 
 function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuList, isOwner, t, deptId, navigate }) {
-  const [active, setActive] = useState(menuList[0].id);
+  const { pageId } = useParams();
+  const menuIds = useMemo(() => menuList.map(menu => menu.id), [menuList]);
+  const resolvedActive = pageId && menuIds.includes(pageId) ? pageId : menuList[0].id;
+  const [active, setActive] = useState(resolvedActive);
   const activeMenu = menuList.find(m => m.id === active);
   const ActiveIcon = activeMenu?.icon;
+
+  useEffect(() => {
+    setActive(resolvedActive);
+  }, [resolvedActive]);
+
+  const openTab = menuId => {
+    setActive(menuId);
+    navigate(`/sp/admin-sp/dept/${deptId}/${menuId}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -273,7 +286,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 return (
                   <button
                     key={menu.id}
-                    onClick={() => setActive(menu.id)}
+                    onClick={() => openTab(menu.id)}
                     className={`flex items-center gap-2 px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
                       isTab
                         ? `border-current ${dept.text} bg-gray-50`
@@ -321,6 +334,8 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 <SalesOrdersList token={token} lang={lang} />
               ) : active === 'sales_order' ? (
                 <SalesOrder token={token} lang={lang} deptColor={dept.color} />
+              ) : active === 'contract' ? (
+                <ContractPanel token={token} lang={lang} deptColor={dept.color} />
               ) : active === 'registrations_report' ? (
                 <RegistrationsReport token={token} lang={lang} />
               ) : (
