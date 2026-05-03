@@ -9,8 +9,12 @@ const i18n = {
     contractTitle: 'สัญญาซื้อ-ขาย', contractSubTitle: 'สัญญาซื้อ-ขายสินค้า / Sale-Purchase Contract',
     contractDate: 'วันที่ทำสัญญา', address: 'ที่อยู่', taxId: 'เลขภาษี', content: 'เนื้อหาสัญญา',
     sellerSign: 'ผู้ขาย', buyerSign: 'ผู้ซื้อ',
-    footerTitle: 'ลงลายมือชื่อคู่สัญญา',
+    footerTitle: 'ข้อมูลคู่สัญญา',
     signLine: 'ลายมือชื่อ',
+    printedName: 'ชื่อพิมพ์',
+    sellerName: 'ชื่อผู้ขาย / บริษัท',
+    buyerName: 'ชื่อลูกค้า / บริษัท',
+    page: 'หน้า',
     signDate: 'วันที่',
     noteLegal: 'สัญญาฉบับนี้จัดทำขึ้นเพื่อเป็นหลักฐานการตกลงซื้อ-ขายและมีผลบังคับทางกฎหมายครบถ้วน หากฝ่ายใดฝ่ายหนึ่งผิดสัญญา สามารถดำเนินการตามกฎหมายได้',
   },
@@ -20,8 +24,12 @@ const i18n = {
     contractTitle: 'Sale Contract', contractSubTitle: 'Sale-Purchase Contract',
     contractDate: 'Contract Date', address: 'Address', taxId: 'Tax ID', content: 'Contract Content',
     sellerSign: 'Seller', buyerSign: 'Buyer',
-    footerTitle: 'Contract Signatures',
+    footerTitle: 'Contract Parties',
     signLine: 'Signature',
+    printedName: 'Printed Name',
+    sellerName: 'Seller Name',
+    buyerName: 'Buyer Name',
+    page: 'Page',
     signDate: 'Date',
     noteLegal: 'This contract is executed as evidence of the purchase and sale agreement and has full legal force. If either party breaches this contract, legal remedies may be pursued accordingly.',
   },
@@ -31,8 +39,12 @@ const i18n = {
     contractTitle: '매매 계약서', contractSubTitle: '매매 계약서 / Sale-Purchase Contract',
     contractDate: '계약일', address: '주소', taxId: '사업자번호', content: '계약 내용',
     sellerSign: '판매자', buyerSign: '구매자',
-    footerTitle: '당사자 서명',
+    footerTitle: '계약 당사자 정보',
     signLine: '서명',
+    printedName: '성명',
+    sellerName: '판매자 성명',
+    buyerName: '구매자 성명',
+    page: '페이지',
     signDate: '날짜',
     noteLegal: '본 계약서는 매매 계약의 증거로서 작성되며 완전한 법적 효력을 가집니다. 계약 당사자 중 한쪽이 계약을 위반할 경우, 관련 법에 따라 법적 조치를 취할 수 있습니다.',
   },
@@ -237,12 +249,19 @@ function PrintView({ row, onClose, t, lang, onChangeLang }) {
   const statusLabel = (STATUS_LABELS[lang] || STATUS_LABELS.th)[row.status] || row.status || (STATUS_LABELS[lang] || STATUS_LABELS.th).draft
   const printContent = buildContractContent(row, lang)
   const localizedTitle = localizeContractTitle(row.title, lang)
+  const sellerPrintedName = textOrDash(row.seller_name)
+  const buyerPrintedName = textOrDash(row.customer_name)
   return (
     <div className="print-modal-root fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
       <style>{`
         @page {
           size: A4 portrait;
           margin: 8mm;
+          @top-right {
+            content: counter(page) " / " counter(pages);
+            font-size: 10px;
+            color: #374151;
+          }
         }
         @media print {
           html,
@@ -304,6 +323,9 @@ function PrintView({ row, onClose, t, lang, onChangeLang }) {
           .print-keep {
             page-break-inside: avoid;
             break-inside: avoid;
+          }
+          .print-page-number {
+            display: none !important;
           }
         }
       `}</style>
@@ -385,20 +407,19 @@ function PrintView({ row, onClose, t, lang, onChangeLang }) {
           <p className="text-center text-[11px] font-semibold tracking-wide text-gray-700 mb-4">{t.footerTitle}</p>
           <div className="grid grid-cols-2 gap-8 mb-2 text-xs text-gray-700">
             <div className="text-center border border-gray-200 rounded-lg p-3 bg-gray-50">
-              <p className="mb-7">.......................................................</p>
               <p className="font-semibold">{t.sellerSign}</p>
-              <p className="text-[11px] text-gray-500 mt-2">{t.signLine} .......................................</p>
-              <p className="text-[11px] text-gray-500">{t.signDate} .......................................</p>
+              <p className="text-[12px] text-gray-700 mt-2 font-medium">{t.sellerName} {sellerPrintedName}</p>
             </div>
             <div className="text-center border border-gray-200 rounded-lg p-3 bg-gray-50">
-              <p className="mb-7">.......................................................</p>
               <p className="font-semibold">{t.buyerSign}</p>
-              <p className="text-[11px] text-gray-500 mt-2">{t.signLine} .......................................</p>
-              <p className="text-[11px] text-gray-500">{t.signDate} .......................................</p>
+              <p className="text-[12px] text-gray-700 mt-2 font-medium">{t.buyerName} {buyerPrintedName}</p>
             </div>
           </div>
         </div>
 
+      </div>
+      <div className="print-page-number hidden">
+        {t.page} <span className="print-page-current" />
       </div>
     </div>
   )
@@ -408,6 +429,7 @@ export default function ContractsList({ token, lang }) {
   const t = i18n[lang] || i18n.th
   const [rows, setRows]     = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [view, setView]     = useState(null)
   const [printLang, setPrintLang] = useState(lang)
   const [printPending, setPrintPending] = useState(false)
@@ -415,9 +437,17 @@ export default function ContractsList({ token, lang }) {
 
   useEffect(() => {
     apiFetch('/api/contracts', { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(d => { setRows(Array.isArray(d) ? d : []); setLoading(false) })
-      .catch(() => setLoading(false))
+      .then(async r => {
+        const d = await r.json()
+        if (!r.ok) throw new Error(d.error || 'โหลดรายการสัญญาไม่สำเร็จ')
+        setRows(Array.isArray(d) ? d : [])
+        setError('')
+        setLoading(false)
+      })
+      .catch(err => {
+        setError(err.message || 'โหลดรายการสัญญาไม่สำเร็จ')
+        setLoading(false)
+      })
   }, [token])
 
   const filtered = rows.filter(r =>
@@ -463,7 +493,9 @@ export default function ContractsList({ token, lang }) {
           />
         </div>
       </div>
-      {filtered.length === 0 ? (
+      {error ? (
+        <p className="text-center py-12 text-red-500">{error}</p>
+      ) : filtered.length === 0 ? (
         <p className="text-center py-12 text-gray-400">{t.empty}</p>
       ) : (
         <div className="overflow-x-auto">

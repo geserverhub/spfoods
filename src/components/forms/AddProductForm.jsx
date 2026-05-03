@@ -137,7 +137,7 @@ export default function AddProductForm({ token, lang = 'th', deptColor }) {
           <select name="category_id" value={form.category_id} onChange={handle}
             className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-100 bg-white">
             <option value="">{t.selectCat}</option>
-            {categories.map(c => <option key={c.id} value={c.id}>{c.category_name}</option>)}
+            {categories.map(c => <option key={c.id} value={c.id}>{c.category_name || c.name}</option>)}
           </select>
         </div>
 
