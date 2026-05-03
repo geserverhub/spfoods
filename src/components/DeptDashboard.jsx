@@ -7,6 +7,10 @@ import AddCustomerForm from './forms/AddCustomerForm';
 import AddProductForm from './forms/AddProductForm';
 import StockReport from './forms/StockReport';
 import RegistrationsReport from './forms/RegistrationsReport';
+import SalesOrder from './forms/SalesOrder';
+import ProductsList from './forms/ProductsList';
+import CustomersList from './forms/CustomersList';
+import SalesOrdersList from './forms/SalesOrdersList';
 
 const deptMenus = {
   accounting: {
@@ -51,6 +55,9 @@ const deptMenus = {
       { id: 'feedback',            icon: BarChart2,  label: 'รายงานปัญหา / ฟีดแบ็คลูกค้า' },
       { id: 'contract',            icon: ScrollText, label: 'สร้างสัญญาซื้อ-ขาย' },
       { id: 'registrations_report',icon: Users,      label: 'ตารางรายงานผู้ติดต่อลงทะเบียน' },
+      { id: 'products_list',       icon: Package,    label: 'รายการสินค้า' },
+      { id: 'customers_list',      icon: Users,      label: 'รายชื่อลูกค้า' },
+      { id: 'sales_orders_list',   icon: FileText,   label: 'รายการใบสั่งขาย' },
     ],
     en: [
       { id: 'add_customer',        icon: Users,      label: 'Add Customer' },
@@ -61,6 +68,9 @@ const deptMenus = {
       { id: 'feedback',            icon: BarChart2,  label: 'Issue Report / Customer Feedback' },
       { id: 'contract',            icon: ScrollText, label: 'Create Sale Contract' },
       { id: 'registrations_report',icon: Users,      label: 'Registration Contact Report' },
+      { id: 'products_list',       icon: Package,    label: 'Products List' },
+      { id: 'customers_list',      icon: Users,      label: 'Customers List' },
+      { id: 'sales_orders_list',   icon: FileText,   label: 'Sales Orders List' },
     ],
     ko: [
       { id: 'add_customer',        icon: Users,      label: '고객 정보 추가' },
@@ -71,6 +81,9 @@ const deptMenus = {
       { id: 'feedback',            icon: BarChart2,  label: '문제 보고 / 고객 피드백' },
       { id: 'contract',            icon: ScrollText, label: '매매 계약서 작성' },
       { id: 'registrations_report',icon: Users,      label: '등록 연락처 보고서' },
+      { id: 'products_list',       icon: Package,    label: '제품 목록' },
+      { id: 'customers_list',      icon: Users,      label: '고객 목록' },
+      { id: 'sales_orders_list',   icon: FileText,   label: '판매 주문 목록' },
     ],
   },
   default: {
@@ -300,6 +313,14 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 </div>
               ) : active === 'stock_report' ? (
                 <StockReport token={token} lang={lang} deptColor={dept.color} />
+              ) : active === 'products_list' ? (
+                <ProductsList token={token} lang={lang} />
+              ) : active === 'customers_list' ? (
+                <CustomersList token={token} lang={lang} />
+              ) : active === 'sales_orders_list' ? (
+                <SalesOrdersList token={token} lang={lang} />
+              ) : active === 'sales_order' ? (
+                <SalesOrder token={token} lang={lang} deptColor={dept.color} />
               ) : active === 'registrations_report' ? (
                 <RegistrationsReport token={token} lang={lang} />
               ) : (

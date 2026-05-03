@@ -14,6 +14,8 @@ import qualityRoutes from './routes/quality.js';
 import deliveryRoutes from './routes/delivery.js';
 import purchaseRoutes from './routes/purchase.js';
 import stockApiRoutes from './routes/stock-api.js';
+import salesOrderRoutes from './routes/sales-orders.js';
+import contractRoutes from './routes/contracts.js';
 
 dotenv.config();
 
@@ -42,6 +44,8 @@ app.use('/api/quality', qualityRoutes);
 app.use('/api/delivery', deliveryRoutes);
 app.use('/api/purchase', purchaseRoutes);
 app.use('/api/stock-api', stockApiRoutes);
+app.use('/api/sales-orders', salesOrderRoutes);
+app.use('/api/contracts', contractRoutes);
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
 

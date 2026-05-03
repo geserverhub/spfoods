@@ -5,7 +5,7 @@ import { CheckCircle, Loader } from 'lucide-react';
 const i18n = {
   th: {
     code: 'รหัสลูกค้า *', name: 'ชื่อลูกค้า / บริษัท *', contact: 'ชื่อผู้ติดต่อ',
-    phone: 'เบอร์โทรศัพท์ *', email: 'อีเมล', address: 'บ้านเลขที่ / ถนน',
+    phone: 'เบอร์โทรศัพท์ *', email: 'อีเมลล์', address: 'บ้านเลขที่ / ถนน',
     subdistrict: 'ตำบล', district: 'อำเภอ', province: 'จังหวัด', country: 'ประเทศ',
     taxId: 'เลขประจำตัวผู้เสียภาษี',
     payType: 'ประเภทการชำระเงิน', cash: 'ลูกค้าเงินสด', credit: 'ลูกค้าเครดิต',

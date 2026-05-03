@@ -23,7 +23,7 @@ router.get('/next-code', requireAuth, async (req, res) => {
 router.get('/categories', requireAuth, async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT id, category_code, category_name FROM product_categories WHERE is_active = 1 ORDER BY sort_order`
+      `SELECT id, name AS category_name FROM product_categories ORDER BY id`
     );
     res.json(rows);
   } catch (err) {
@@ -54,9 +54,9 @@ router.post('/', requireAuth, async (req, res) => {
 router.get('/', requireAuth, async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT p.*, c.category_name FROM products p
+      `SELECT p.*, c.name AS category_name FROM products p
        LEFT JOIN product_categories c ON p.category_id = c.id
-       WHERE p.is_active = 1 ORDER BY p.created_at DESC`
+       WHERE p.active = 1 ORDER BY p.created_at DESC`
     );
     res.json(rows);
   } catch (err) {
