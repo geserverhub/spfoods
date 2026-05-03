@@ -385,16 +385,16 @@ function PrintView({ row, onClose, t, lang, onChangeLang }) {
           <p className="text-center text-[11px] font-semibold tracking-wide text-gray-700 mb-4">{t.footerTitle}</p>
           <div className="grid grid-cols-2 gap-8 mb-2 text-xs text-gray-700">
             <div className="text-center border border-gray-200 rounded-lg p-3 bg-gray-50">
-              <p className="mb-7">.......................................................</p>
               <p className="font-semibold">{t.sellerSign}</p>
-              <p className="text-[11px] text-gray-500 mt-2">{t.signLine} .......................................</p>
-              <p className="text-[11px] text-gray-500">{t.signDate} .......................................</p>
+              <p className="text-[11px] text-gray-700 mt-2">{t.signLine} {row.seller_name || '-'}</p>
+              <p className="text-[11px] text-gray-500">ชื่อผู้ขาย / บริษัท: {row.seller_name || '-'}</p>
+              <p className="text-[11px] text-gray-500">{t.signDate}: {row.contract_date ? new Date(row.contract_date).toLocaleDateString(dateLocale) : '-'}</p>
             </div>
             <div className="text-center border border-gray-200 rounded-lg p-3 bg-gray-50">
-              <p className="mb-7">.......................................................</p>
               <p className="font-semibold">{t.buyerSign}</p>
-              <p className="text-[11px] text-gray-500 mt-2">{t.signLine} .......................................</p>
-              <p className="text-[11px] text-gray-500">{t.signDate} .......................................</p>
+              <p className="text-[11px] text-gray-700 mt-2">{t.signLine} {row.customer_name || '-'}</p>
+              <p className="text-[11px] text-gray-500">ชื่อลูกค้า / บริษัท: {row.customer_name || '-'}</p>
+              <p className="text-[11px] text-gray-500">{t.signDate}: {row.contract_date ? new Date(row.contract_date).toLocaleDateString(dateLocale) : '-'}</p>
             </div>
           </div>
         </div>

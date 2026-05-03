@@ -202,6 +202,8 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
   const [active, setActive] = useState(menuList[0].id);
   const activeMenu = menuList.find(m => m.id === active);
   const ActiveIcon = activeMenu?.icon;
+  const isSalesDept = dept.id === 'sales';
+  const useFullWidth = ['registrations_report', 'contracts_list', 'sales_orders_list', 'products_list', 'feedback', 'crm'].includes(active);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -273,8 +275,8 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
       ) : (
         <>
           {/* Tab Bar */}
-          <div className="bg-white border-b border-gray-200 shrink-0 overflow-x-auto">
-            <div className="flex min-w-max px-2">
+          <div className={`${isSalesDept ? 'bg-white/95 backdrop-blur border-b border-blue-100 shadow-sm' : 'bg-white border-b border-gray-200'} shrink-0 overflow-x-auto`}>
+            <div className={`flex min-w-max ${isSalesDept ? 'px-3 py-2 gap-2' : 'px-2'}`}>
               {menuList.map((menu) => {
                 const Icon = menu.icon;
                 const isTab = active === menu.id;
@@ -282,10 +284,14 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                   <button
                     key={menu.id}
                     onClick={() => setActive(menu.id)}
-                    className={`flex items-center gap-2 px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
-                      isTab
-                        ? 'border-current text-black bg-gray-50'
-                        : 'border-transparent text-black hover:text-black hover:border-gray-300'
+                    className={`flex items-center gap-2 text-xs font-medium whitespace-nowrap transition-all ${
+                      isSalesDept
+                        ? isTab
+                          ? 'px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50 text-black shadow-sm'
+                          : 'px-4 py-2.5 rounded-xl border border-transparent text-black hover:bg-gray-50 hover:border-gray-200'
+                        : isTab
+                          ? 'px-4 py-3 border-b-2 border-current text-black bg-gray-50'
+                          : 'px-4 py-3 border-b-2 border-transparent text-black hover:text-black hover:border-gray-300'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -297,9 +303,10 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
           </div>
 
           {/* Page Content */}
-          <div className="flex-1 overflow-y-auto">
-            <div className={(active === 'registrations_report' || active === 'contracts_list' || active === 'sales_orders_list' || active === 'products_list' || active === 'feedback' || active === 'crm') ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
-              <div className="flex items-center gap-3 mb-6">
+          <div className={`flex-1 overflow-y-auto ${isSalesDept ? 'bg-gradient-to-b from-slate-50 via-white to-blue-50/40' : ''}`}>
+            <div className={useFullWidth ? 'w-full px-4 md:px-6 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
+              <div className={`mb-6 ${isSalesDept ? 'bg-white/90 border border-blue-100 rounded-2xl p-4 shadow-sm' : ''}`}>
+                <div className="flex items-center gap-3">
                 {ActiveIcon && (
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${dept.color} flex items-center justify-center shadow`}>
                     <ActiveIcon className="w-5 h-5 text-white" />
@@ -309,6 +316,14 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                   <h2 className="text-lg font-bold text-gray-800">{pageContent[active]?.[lang] || activeMenu?.label}</h2>
                   <p className="text-xs text-gray-400 font-mono">/sp/admin-sp/dept/{deptId}/{active}</p>
                 </div>
+                </div>
+                {isSalesDept && (
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold">Sales Workspace</span>
+                    <span className="text-[11px] px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">{menuList.length} menus</span>
+                    <span className="text-[11px] px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-medium">Live operations</span>
+                  </div>
+                )}
               </div>
 
               {active === 'add_customer' ? (

@@ -542,8 +542,9 @@ export default function ContractPanel({ token, lang, deptColor }) {
             </div>
             <div className="text-center space-y-1 w-full">
               <p className="text-sm font-bold text-gray-900">ผู้ขาย / Seller</p>
-              <p className="text-xs text-gray-600 border-b border-gray-300 pb-1">({form.seller_name || '........................................'})</p>
-              <p className="text-xs text-gray-500">วันที่ / Date ................................</p>
+              <p className="text-xs text-gray-700 border-b border-gray-300 pb-1">ลายมือชื่อ / Signature: {form.seller_name || '-'}</p>
+              <p className="text-xs text-gray-500">ชื่อผู้ขาย / บริษัท: {form.seller_name || '-'}</p>
+              <p className="text-xs text-gray-500">วันที่ / Date: {form.contract_date || '-'}</p>
               <p className="text-xs text-gray-500">ตำแหน่ง / Position ......................</p>
             </div>
           </div>
@@ -553,8 +554,9 @@ export default function ContractPanel({ token, lang, deptColor }) {
             </div>
             <div className="text-center space-y-1 w-full">
               <p className="text-sm font-bold text-gray-900">ผู้ซื้อ / Buyer</p>
-              <p className="text-xs text-gray-600 border-b border-gray-300 pb-1">({form.customer_name || '........................................'})</p>
-              <p className="text-xs text-gray-500">วันที่ / Date ................................</p>
+              <p className="text-xs text-gray-700 border-b border-gray-300 pb-1">ลายมือชื่อ / Signature: {form.customer_name || '-'}</p>
+              <p className="text-xs text-gray-500">ชื่อลูกค้า / บริษัท: {form.customer_name || '-'}</p>
+              <p className="text-xs text-gray-500">วันที่ / Date: {form.contract_date || '-'}</p>
               <p className="text-xs text-gray-500">ตำแหน่ง / Position ......................</p>
             </div>
           </div>
