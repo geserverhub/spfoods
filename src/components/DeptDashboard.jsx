@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { X, ChevronRight, Plus, FileText, Printer, BarChart2, Users, RefreshCw, Receipt, CreditCard, BookOpen, ScrollText, ArrowLeft, Package } from 'lucide-react';
 import { deptMeta, deptI18n } from '../config/adminDepts';
@@ -13,8 +13,6 @@ import CustomersList from './forms/CustomersList';
 import SalesOrdersList from './forms/SalesOrdersList';
 import ContractPanel from './forms/ContractPanel';
 import ContractsList from './forms/ContractsList';
-import SalesOrdersCRM from './forms/SalesOrdersCRM';
-import FeedbackPanel from './forms/FeedbackPanel';
 
 const deptMenus = {
   accounting: {
@@ -62,7 +60,7 @@ const deptMenus = {
       { id: 'products_list',       icon: Package,    label: 'รายการสินค้า' },
       { id: 'customers_list',      icon: Users,      label: 'รายชื่อลูกค้า' },
       { id: 'sales_orders_list',   icon: FileText,   label: 'รายการใบสั่งขาย' },
-      { id: 'contracts_list',       icon: ScrollText, label: 'รายการสัญญา' },
+      { id: 'contracts_list',      icon: ScrollText, label: 'รายการสัญญา' },
     ],
     en: [
       { id: 'add_customer',        icon: Users,      label: 'Add Customer' },
@@ -76,7 +74,7 @@ const deptMenus = {
       { id: 'products_list',       icon: Package,    label: 'Products List' },
       { id: 'customers_list',      icon: Users,      label: 'Customers List' },
       { id: 'sales_orders_list',   icon: FileText,   label: 'Sales Orders List' },
-      { id: 'contracts_list',       icon: ScrollText, label: 'Contracts List' },
+      { id: 'contracts_list',      icon: ScrollText, label: 'Contracts List' },
     ],
     ko: [
       { id: 'add_customer',        icon: Users,      label: '고객 정보 추가' },
@@ -90,7 +88,7 @@ const deptMenus = {
       { id: 'products_list',       icon: Package,    label: '제품 목록' },
       { id: 'customers_list',      icon: Users,      label: '고객 목록' },
       { id: 'sales_orders_list',   icon: FileText,   label: '판매 주문 목록' },
-      { id: 'contracts_list',       icon: ScrollText, label: '계약 목록' },
+      { id: 'contracts_list',      icon: ScrollText, label: '계약 목록' },
     ],
   },
   default: {
@@ -128,10 +126,10 @@ const pageContent = {
   sales_order: { th: 'สร้างใบสั่งขาย',               en: 'Create Sales Order',             ko: '판매 주문 작성' },
   crm:         { th: 'บันทึกอัพเดตลูกค้าสัมพันธ์',   en: 'Update Customer Relations',      ko: '고객 관계 업데이트' },
   feedback:    { th: 'รายงานปัญหา / ฟีดแบ็คลูกค้า',  en: 'Issue Report / Customer Feedback', ko: '문제 보고 / 고객 피드백' },
-  contract:    { th: 'สร้างสัญญาซื้อ-ขาย',           en: 'Create Sale Contract',           ko: '매매 계약서 작성' },
-  stock_report:         { th: 'รายงานสต๊อกสินค้าคงเหลือ',       en: 'Stock Report',                ko: '재고 현황 보고서' },
-  registrations_report: { th: 'ตารางรายงานผู้ติดต่อลงทะเบียน', en: 'Registration Contact Report', ko: '등록 연락처 보고서' },
-  contracts_list:       { th: 'รายการสัญญา',                       en: 'Contracts List',                ko: '계약 목록' },
+  contract:             { th: 'สร้างสัญญาซื้อ-ขาย',                en: 'Create Sale Contract',           ko: '매매 계약서 작성' },
+  stock_report:         { th: 'รายงานสต๊อกสินค้าคงเหลือ',         en: 'Stock Report',                   ko: '재고 현황 보고서' },
+  registrations_report: { th: 'ตารางรายงานผู้ติดต่อลงทะเบียน',   en: 'Registration Contact Report',    ko: '등록 연락처 보고서' },
+  contracts_list:       { th: 'รายการสัญญา',                       en: 'Contracts List',                 ko: '계약 목록' },
 };
 
 const ui18n = {
@@ -199,21 +197,9 @@ export default function DeptDashboard() {
 }
 
 function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuList, isOwner, t, deptId, navigate }) {
-  const { pageId } = useParams();
-  const menuIds = useMemo(() => menuList.map(menu => menu.id), [menuList]);
-  const resolvedActive = pageId && menuIds.includes(pageId) ? pageId : menuList[0].id;
-  const [active, setActive] = useState(resolvedActive);
+  const [active, setActive] = useState(menuList[0].id);
   const activeMenu = menuList.find(m => m.id === active);
   const ActiveIcon = activeMenu?.icon;
-
-  useEffect(() => {
-    setActive(resolvedActive);
-  }, [resolvedActive]);
-
-  const openTab = menuId => {
-    setActive(menuId);
-    navigate(`/sp/admin-sp/dept/${deptId}/${menuId}`);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -273,10 +259,10 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 >
                   <span className="text-3xl">{menu.icon}</span>
                   <div className="flex-1">
-                    <p className="font-semibold text-black text-sm">{menu.label}</p>
-                    <p className="text-xs text-gray-600 mt-0.5">{t.clickView}</p>
+                    <p className="font-semibold text-gray-800 text-sm">{menu.label}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{t.clickView}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-500" />
+                  <ChevronRight className="w-4 h-4 text-gray-300" />
                 </button>
               ))}
             </div>
@@ -293,11 +279,11 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 return (
                   <button
                     key={menu.id}
-                    onClick={() => openTab(menu.id)}
+                    onClick={() => setActive(menu.id)}
                     className={`flex items-center gap-2 px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
                       isTab
                         ? `border-current ${dept.text} bg-gray-50`
-                        : 'border-transparent text-gray-700 hover:text-black hover:border-gray-400'
+                        : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -310,7 +296,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
 
           {/* Page Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className={(active === 'registrations_report' || active === 'contracts_list' || active === 'sales_orders_list' || active === 'crm' || active === 'feedback') ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
+            <div className={(active === 'registrations_report' || active === 'contracts_list' || active === 'sales_orders_list') ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
               <div className="flex items-center gap-3 mb-6">
                 {ActiveIcon && (
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${dept.color} flex items-center justify-center shadow`}>
@@ -343,10 +329,6 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 <ContractsList token={token} lang={lang} />
               ) : active === 'sales_order' ? (
                 <SalesOrder token={token} lang={lang} deptColor={dept.color} />
-              ) : active === 'crm' ? (
-                <SalesOrdersCRM token={token} lang={lang} deptColor={dept.color} />
-              ) : active === 'feedback' ? (
-                <FeedbackPanel token={token} lang={lang} deptColor={dept.color} />
               ) : active === 'contract' ? (
                 <ContractPanel token={token} lang={lang} deptColor={dept.color} />
               ) : active === 'registrations_report' ? (

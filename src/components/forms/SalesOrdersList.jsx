@@ -8,7 +8,6 @@ const i18n = {
     action:'การทำงาน', view:'วิว', print:'ปริ้น', close:'ปิด', note:'หมายเหตุ',
     search:'ค้นหา SO / ลูกค้า...',
     printTitle:'ใบสั่งขาย', printSubTitle:'ใบสั่งขาย / Sales Order',
-    contractNo:'เลขที่สัญญา',
     address:'ที่อยู่', taxId:'เลขภาษี', product:'สินค้า', unit:'หน่วย', qty:'จำนวน', price:'ราคา', amount:'รวม', subtotal:'ยอดรวม', grandTotal:'ยอดรวมสุทธิ',
   },
   en: {
@@ -16,7 +15,6 @@ const i18n = {
     action:'Action', view:'View', print:'Print', close:'Close', note:'Note',
     search:'Search SO / customer...',
     printTitle:'Sales Order', printSubTitle:'Sales Order',
-    contractNo:'Contract No.',
     address:'Address', taxId:'Tax ID', product:'Product', unit:'Unit', qty:'Qty', price:'Price', amount:'Amount', subtotal:'Subtotal', grandTotal:'Grand Total',
   },
   ko: {
@@ -24,7 +22,6 @@ const i18n = {
     action:'작업', view:'보기', print:'인쇄', close:'닫기', note:'메모',
     search:'SO / 고객 검색...',
     printTitle:'판매 주문서', printSubTitle:'판매 주문서 / Sales Order',
-    contractNo:'계약 번호',
     address:'주소', taxId:'사업자번호', product:'제품', unit:'단위', qty:'수량', price:'단가', amount:'금액', subtotal:'소계', grandTotal:'합계',
   },
 }
@@ -75,7 +72,6 @@ function PrintView({ row, items, onClose, t, lang }) {
             <p><span className="text-gray-500">{t.soNo}:</span> <span className="font-bold text-gray-900">{row.so_no}</span></p>
             <p><span className="text-gray-500">{t.date}:</span> <span className="text-gray-900">{row.so_date ? new Date(row.so_date).toLocaleDateString(dateLocale) : '—'}</span></p>
             <p><span className="text-gray-500">{t.due}:</span> <span className="text-gray-900">{row.due_date ? new Date(row.due_date).toLocaleDateString(dateLocale) : '—'}</span></p>
-            <p><span className="text-gray-500">{t.contractNo}:</span> <span className="font-medium text-gray-900">{row.contract_no || '—'}</span></p>
           </div>
           <div>
             <p><span className="text-gray-500">{t.customer}:</span> <span className="font-medium text-gray-900">{row.customer_name}</span></p>
@@ -112,7 +108,7 @@ function PrintView({ row, items, onClose, t, lang }) {
         <div className="flex justify-end">
           <div className="w-64 space-y-2 text-sm">
             <div className="flex justify-between text-gray-700"><span>{t.subtotal}</span><span>{fmt(row.subtotal)}</span></div>
-            <div className="flex justify-between text-gray-700"><span>VAT 10%</span><span>{fmt(row.vat_amount)}</span></div>
+            <div className="flex justify-between text-gray-700"><span>VAT 7%</span><span>{fmt(row.vat_amount)}</span></div>
             <div className="flex justify-between font-bold text-gray-900 border-t border-gray-300 pt-2 text-base"><span>{t.grandTotal}</span><span className="text-blue-700">{fmt(row.total_amount)} ฿</span></div>
           </div>
         </div>
