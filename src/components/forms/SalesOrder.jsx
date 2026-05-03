@@ -65,6 +65,7 @@ export default function SalesOrder({ token, lang, deptColor }) {
   const [contractSearch, setContractSearch] = useState('')
   const [contractResults, setContractResults] = useState([])
   const [showContractSearch, setShowContractSearch] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     const h = { Authorization: `Bearer ${token}` }
@@ -125,6 +126,7 @@ export default function SalesOrder({ token, lang, deptColor }) {
   const handleSubmit = async e => {
     e.preventDefault()
     setSubmitting(true)
+    setSubmitError('')
     try {
       const res = await apiFetch('/api/sales-orders', {
         method: 'POST',
@@ -140,8 +142,14 @@ export default function SalesOrder({ token, lang, deptColor }) {
         }),
       })
       const data = await res.json()
-      if (data.success) setDone(data.so_no)
-    } catch {}
+      if (data.success) {
+        setDone(data.so_no)
+      } else {
+        setSubmitError(data.error || t.contractRequired)
+      }
+    } catch {
+      setSubmitError(t.contractRequired)
+    }
     setSubmitting(false)
   }
 
@@ -424,13 +432,18 @@ export default function SalesOrder({ token, lang, deptColor }) {
 
       {/* Submit */}
       <div className="flex justify-end">
-        <button
-          type="submit"
-          disabled={submitting || !contractNo || items.every(it => !it.product_name)}
-          className={`px-8 py-3 rounded-xl font-bold text-white text-sm bg-gradient-to-r ${deptColor} hover:opacity-90 disabled:opacity-50 transition-opacity`}
-        >
-          {submitting ? '...' : !contractNo ? `🔍 ${t.contract}` : t.submit}
-        </button>
+        <div className="flex flex-col items-end gap-2">
+          {submitError && (
+            <p className="text-xs text-red-600 font-medium">{submitError}</p>
+          )}
+          <button
+            type="submit"
+            disabled={submitting || !contractNo || items.every(it => !it.product_name)}
+            className={`px-8 py-3 rounded-xl font-bold text-white text-sm bg-gradient-to-r ${deptColor} hover:opacity-90 disabled:opacity-50 transition-opacity`}
+          >
+            {submitting ? '...' : !contractNo ? `🔍 ${t.contract}` : t.submit}
+          </button>
+        </div>
       </div>
     </form>
   )

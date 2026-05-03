@@ -50,13 +50,23 @@ export default function ProductsList({ token, lang }) {
   const t = i18n[lang] || i18n.th
   const [rows, setRows]   = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [view, setView]   = useState(null)
   const [search, setSearch] = useState('')
 
   useEffect(() => {
     apiFetch('/api/products', { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json()).then(d => { setRows(Array.isArray(d) ? d : []); setLoading(false) })
-      .catch(() => setLoading(false))
+      .then(async r => {
+        const d = await r.json()
+        if (!r.ok) throw new Error(d.error || 'โหลดรายการสินค้าไม่สำเร็จ')
+        setRows(Array.isArray(d) ? d : [])
+        setError('')
+        setLoading(false)
+      })
+      .catch(err => {
+        setError(err.message || 'โหลดรายการสินค้าไม่สำเร็จ')
+        setLoading(false)
+      })
   }, [token])
 
   const filtered = rows.filter(r =>
@@ -76,7 +86,7 @@ export default function ProductsList({ token, lang }) {
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="ค้นหา..." className="text-sm border border-gray-200 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-200 w-40" />
         </div>
       </div>
-      {filtered.length === 0 ? <p className="text-center py-12 text-gray-400">{t.empty}</p> : (
+      {error ? <p className="text-center py-12 text-red-500">{error}</p> : filtered.length === 0 ? <p className="text-center py-12 text-gray-400">{t.empty}</p> : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-xs font-bold text-gray-800 uppercase">

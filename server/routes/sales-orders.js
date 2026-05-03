@@ -66,6 +66,12 @@ router.post('/', requireAuth, async (req, res) => {
       currency = 'THB', contract_no = null, contract_id = null,
     } = req.body;
 
+    const normalizedContractNo = String(contract_no || '').trim();
+    if (!normalizedContractNo) {
+      await conn.rollback();
+      return res.status(400).json({ error: 'Contract number is required for every sales order' });
+    }
+
     const so_no = await generateSoNo();
 
     let subtotal = 0;
@@ -77,9 +83,14 @@ router.post('/', requireAuth, async (req, res) => {
 
     // resolve contract_id จาก contract_no ถ้าไม่ได้ส่งมา
     let resolvedContractId = contract_id || null;
-    if (!resolvedContractId && contract_no) {
-      const [[c]] = await conn.query('SELECT id FROM contracts WHERE contract_no = ? LIMIT 1', [contract_no]);
+    if (!resolvedContractId) {
+      const [[c]] = await conn.query('SELECT id FROM contracts WHERE contract_no = ? LIMIT 1', [normalizedContractNo]);
       if (c) resolvedContractId = c.id;
+    }
+
+    if (!resolvedContractId) {
+      await conn.rollback();
+      return res.status(400).json({ error: `Contract not found: ${normalizedContractNo}` });
     }
 
     const [result] = await conn.query(
@@ -90,7 +101,7 @@ router.post('/', requireAuth, async (req, res) => {
        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [so_no, customer_id || null, customer_name, customer_address, customer_tax_id,
        so_date, due_date || null, payment_type, payment_terms, currency,
-       contract_no, resolvedContractId, subtotal, vat_amount, total_amount, note, created_by]
+       normalizedContractNo, resolvedContractId, subtotal, vat_amount, total_amount, note, created_by]
     );
     const so_id = result.insertId;
 

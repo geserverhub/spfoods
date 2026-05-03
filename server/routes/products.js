@@ -23,10 +23,11 @@ router.get('/next-code', requireAuth, async (req, res) => {
 router.get('/categories', requireAuth, async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT id, name AS category_name FROM product_categories ORDER BY id`
+      `SELECT id, name AS category_name FROM product_categories ORDER BY name ASC`
     );
     res.json(rows);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -54,12 +55,16 @@ router.post('/', requireAuth, async (req, res) => {
 router.get('/', requireAuth, async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT p.*, c.name AS category_name FROM products p
-       LEFT JOIN product_categories c ON p.category_id = c.id
+      `SELECT p.*, c.category_name FROM products p
+       LEFT JOIN (
+         SELECT id, name AS category_name
+         FROM product_categories
+       ) c ON p.category_id = c.id
        WHERE p.active = 1 ORDER BY p.created_at DESC`
     );
     res.json(rows);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
 });
