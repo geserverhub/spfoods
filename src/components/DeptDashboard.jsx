@@ -284,8 +284,8 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                     onClick={() => setActive(menu.id)}
                     className={`flex items-center gap-2 px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
                       isTab
-                        ? `border-current ${dept.text} bg-gray-50`
-                        : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300'
+                        ? 'border-current text-black bg-gray-50'
+                        : 'border-transparent text-black hover:text-black hover:border-gray-300'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -298,7 +298,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
 
           {/* Page Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className={(active === 'registrations_report' || active === 'contracts_list' || active === 'sales_orders_list' || active === 'products_list' || active === 'feedback') ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
+            <div className={(active === 'registrations_report' || active === 'contracts_list' || active === 'sales_orders_list' || active === 'products_list' || active === 'feedback' || active === 'crm') ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
               <div className="flex items-center gap-3 mb-6">
                 {ActiveIcon && (
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${dept.color} flex items-center justify-center shadow`}>

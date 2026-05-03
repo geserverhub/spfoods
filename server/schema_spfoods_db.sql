@@ -185,11 +185,13 @@ CREATE TABLE `crm_tracking` (
   `service_stage` enum('pre-sale','during','post-sale') NOT NULL,
   `description` text DEFAULT NULL,
   `notes` text DEFAULT NULL,
+  `contract_no` varchar(100) DEFAULT NULL,
   `created_by` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `customer_id` (`customer_id`),
+  KEY `contract_no` (`contract_no`),
   CONSTRAINT `crm_tracking_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

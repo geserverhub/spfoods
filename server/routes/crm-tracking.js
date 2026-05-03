@@ -10,17 +10,23 @@ router.get('/summary', requireAuth, async (req, res) => {
     const [rows] = await pool.query(`
       SELECT c.id, c.customer_code, c.customer_name, c.phone, c.email,
              ct.id AS tracking_id, ct.interaction_type, ct.service_stage,
-             ct.description, ct.notes, ct.contract_no, ct.created_at, ct.updated_at,
+             ct.description, ct.notes,
+             (
+               SELECT contract_no FROM sales_orders
+               WHERE customer_id = c.id
+                 AND contract_no IS NOT NULL
+                 AND contract_no <> ''
+               ORDER BY created_at DESC LIMIT 1
+             ) AS contract_no,
+             ct.created_at, ct.updated_at,
              (
                SELECT so_no FROM sales_orders
               WHERE customer_id = c.id
-                OR (ct.contract_no IS NOT NULL AND contract_no = ct.contract_no)
                ORDER BY created_at DESC LIMIT 1
              ) AS latest_so_no,
              (
               SELECT COUNT(*) FROM sales_orders
               WHERE customer_id = c.id
-                OR (ct.contract_no IS NOT NULL AND contract_no = ct.contract_no)
              ) AS so_count
       FROM customers c
       INNER JOIN crm_tracking ct ON ct.id = (
@@ -41,17 +47,23 @@ router.get('/records', requireAuth, async (req, res) => {
     const [rows] = await pool.query(`
       SELECT c.id, c.customer_code, c.customer_name, c.phone, c.email,
              ct.id AS tracking_id, ct.interaction_type, ct.service_stage,
-             ct.description, ct.notes, ct.contract_no, ct.created_at, ct.updated_at,
+             ct.description, ct.notes,
+             (
+               SELECT contract_no FROM sales_orders
+               WHERE customer_id = c.id
+                 AND contract_no IS NOT NULL
+                 AND contract_no <> ''
+               ORDER BY created_at DESC LIMIT 1
+             ) AS contract_no,
+             ct.created_at, ct.updated_at,
              (
                SELECT so_no FROM sales_orders
                WHERE customer_id = c.id
-                 OR (ct.contract_no IS NOT NULL AND contract_no = ct.contract_no)
                ORDER BY created_at DESC LIMIT 1
              ) AS latest_so_no,
              (
               SELECT COUNT(*) FROM sales_orders
               WHERE customer_id = c.id
-                OR (ct.contract_no IS NOT NULL AND contract_no = ct.contract_no)
              ) AS so_count
       FROM crm_tracking ct
       INNER JOIN customers c ON c.id = ct.customer_id

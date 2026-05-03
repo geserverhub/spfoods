@@ -35,6 +35,7 @@ const i18n = {
     allDbRecords: 'รายการบันทึกทั้งหมดจากฐานข้อมูล',
     dbCustomerList: 'รายชื่อลูกค้าจากฐานข้อมูล',
     pendingCustomers: 'ลูกค้าที่ติดตามค้างอยู่',
+    countRecords: 'รายการ',
     choose: 'เลือก',
     customerCode: 'รหัสลูกค้า',
     customer: 'ลูกค้า',
@@ -43,6 +44,14 @@ const i18n = {
     followUpStage: 'สถานะติดตาม',
     pendingEmpty: 'ยังไม่พบลูกค้าที่ติดตามค้างอยู่',
     loadFailed: 'ไม่สามารถโหลดข้อมูลจากฐานข้อมูลได้',
+    tableCustomer: 'ลูกค้า',
+    tableContractNo: 'เลขที่สัญญา',
+    tableSONo: 'เลขที่บิล',
+    tableInteractionType: 'ประเภทการติดตาม',
+    tableStage: 'สถานะ',
+    tableDescription: 'รายละเอียด',
+    tableNotes: 'หมายเหตุ',
+    tableUpdated: 'อัปเดต',
   },
   en: {
     searchPlaceholder: 'Search code / name / phone...',
@@ -76,12 +85,21 @@ const i18n = {
     allDbRecords: 'All records from database',
     dbCustomerList: 'Customer list from database',
     pendingCustomers: 'Customers with pending follow-up',
+    countRecords: 'items',
     choose: 'Select',
     customerCode: 'Customer Code',
     customer: 'Customer',
     phone: 'Phone',
     lastFollowUp: 'Last follow-up',
     followUpStage: 'Follow-up stage',
+    tableCustomer: 'Customer',
+    tableContractNo: 'Contract No.',
+    tableSONo: 'SO No.',
+    tableInteractionType: 'Interaction Type',
+    tableStage: 'Stage',
+    tableDescription: 'Description',
+    tableNotes: 'Notes',
+    tableUpdated: 'Updated',
     pendingEmpty: 'No pending follow-up customers found',
     loadFailed: 'Failed to load database records',
   },
@@ -117,12 +135,21 @@ const i18n = {
     allDbRecords: '데이터베이스 전체 기록',
     dbCustomerList: '데이터베이스 고객 목록',
     pendingCustomers: '후속 관리가 남은 고객',
+    countRecords: '항목',
     choose: '선택',
     customerCode: '고객 코드',
     customer: '고객',
     phone: '전화번호',
     lastFollowUp: '최근 추적',
     followUpStage: '추적 상태',
+    tableCustomer: '고객',
+    tableContractNo: '계약 번호',
+    tableSONo: 'SO번호',
+    tableInteractionType: '상호작용 유형',
+    tableStage: '상태',
+    tableDescription: '설명',
+    tableNotes: '비고',
+    tableUpdated: '업데이트',
     pendingEmpty: '후속 관리가 필요한 고객이 없습니다',
     loadFailed: '데이터베이스 정보를 불러오지 못했습니다',
   },
@@ -466,20 +493,20 @@ export default function SalesOrdersCRM({ token, lang }) {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 className="font-bold text-gray-900 text-sm">{t.allDbRecords}</h3>
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">{summary.length} ราย</span>
+            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">{summary.length} {t.countRecords}</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead className="bg-gray-50 text-gray-700 font-bold uppercase">
                 <tr>
-                  <th className="px-4 py-2.5 text-left">ลูกค้า</th>
-                  <th className="px-4 py-2.5 text-left whitespace-nowrap">เลขที่สัญญา</th>
-                  <th className="px-4 py-2.5 text-left whitespace-nowrap">เลขที่บิล</th>
-                  <th className="px-4 py-2.5 text-left">ประเภทการติดตาม</th>
-                  <th className="px-4 py-2.5 text-left">สถานะ</th>
-                  <th className="px-4 py-2.5 text-left min-w-[180px]">รายละเอียด</th>
-                  <th className="px-4 py-2.5 text-left min-w-[140px]">หมายเหตุ</th>
-                  <th className="px-4 py-2.5 text-left">อัปเดต</th>
+                  <th className="px-4 py-2.5 text-left">{t.tableCustomer}</th>
+                  <th className="px-4 py-2.5 text-left whitespace-nowrap">{t.tableContractNo}</th>
+                  <th className="px-4 py-2.5 text-left whitespace-nowrap">{t.tableSONo}</th>
+                  <th className="px-4 py-2.5 text-left">{t.tableInteractionType}</th>
+                  <th className="px-4 py-2.5 text-left">{t.tableStage}</th>
+                  <th className="px-4 py-2.5 text-left min-w-[180px]">{t.tableDescription}</th>
+                  <th className="px-4 py-2.5 text-left min-w-[140px]">{t.tableNotes}</th>
+                  <th className="px-4 py-2.5 text-left">{t.tableUpdated}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -594,7 +621,7 @@ export default function SalesOrdersCRM({ token, lang }) {
       <div className="bg-white rounded-2xl border border-amber-200 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-amber-100 flex items-center justify-between bg-amber-50/60">
           <h3 className="font-bold text-amber-900 text-sm">{t.pendingCustomers}</h3>
-          <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">{pendingCustomers.length} ราย</span>
+                <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">{pendingCustomers.length} {t.countRecords}</span>
         </div>
 
         {summaryLoading ? (
@@ -654,7 +681,7 @@ export default function SalesOrdersCRM({ token, lang }) {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="font-bold text-gray-900 text-sm">{t.dbCustomerList}</h3>
-                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">{dbCustomers.length} ราย</span>
+                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">{dbCustomers.length} {t.countRecords}</span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
