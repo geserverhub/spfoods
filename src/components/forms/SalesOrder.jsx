@@ -12,6 +12,7 @@ const i18n = {
     note: 'หมายเหตุ', submit: 'สร้างใบสั่งขาย', success: 'สร้างใบสั่งขายสำเร็จ',
     new: 'สร้างใหม่', payType: 'ประเภทการชำระเงิน', payTerm: 'เงื่อนไขการชำระ',
     contract: 'เลขที่สัญญาซื้อขาย', searchContract: 'ค้นหาสัญญา', attachContract: 'แนบสัญญา',
+    contractRequired: '⚠️ กรุณาแนบเลขที่สัญญาซื้อขาย (CNT-...) ก่อนบันทึก',
     cash: 'เงินสด', credit: 'เครดิต', transfer: 'โอนเงิน',
   },
   en: {
@@ -23,6 +24,7 @@ const i18n = {
     note: 'Note', submit: 'Create Sales Order', success: 'Sales Order Created',
     new: 'New Order', payType: 'Payment Type', payTerm: 'Payment Terms',
     contract: 'Contract No.', searchContract: 'Search Contract', attachContract: 'Attach',
+    contractRequired: '⚠️ Please attach a Contract No. (CNT-...) before saving',
     cash: 'Cash', credit: 'Credit', transfer: 'Transfer',
   },
   ko: {
@@ -34,6 +36,7 @@ const i18n = {
     note: '메모', submit: '판매 주문 작성', success: '판매 주문 생성 완료',
     new: '새 주문', payType: '결제 유형', payTerm: '결제 조건',
     contract: '계약 번호', searchContract: '계약 검색', attachContract: '첨부',
+    contractRequired: '⚠️ 저장하기 전에 계약 번호 (CNT-...)를 첨부해 주세요',
     cash: '현금', credit: '외상', transfer: '계좌이체',
   },
 }
@@ -180,7 +183,7 @@ export default function SalesOrder({ token, lang, deptColor }) {
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-800 mb-1">{t.dueDate}</label>
-            <input type="text" name="due_date" value={form.due_date} onChange={handleForm} placeholder="YYYY-MM-DD" pattern="\d{4}-\d{2}-\d{2}" className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            <input type="date" name="due_date" value={form.due_date} onChange={handleForm} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200" />
           </div>
         </div>
       </div>
@@ -225,7 +228,9 @@ export default function SalesOrder({ token, lang, deptColor }) {
 
           {/* เลขที่สัญญาซื้อขาย */}
           <div>
-            <label className="block text-xs font-bold text-gray-800 mb-2">{t.contract}</label>
+            <label className="block text-xs font-bold text-gray-800 mb-2">
+              {t.contract} <span className="text-red-500">*</span>
+            </label>
             <div className="relative">
               <div className="flex gap-2">
                 <input
@@ -252,8 +257,10 @@ export default function SalesOrder({ token, lang, deptColor }) {
                   ))}
                 </div>
               )}
-              {contractNo && (
+              {contractNo ? (
                 <p className="mt-1 text-xs text-green-700 font-medium">✓ แนบสัญญา: {contractNo}</p>
+              ) : (
+                <p className="mt-1 text-xs text-red-500 font-medium">{t.contractRequired}</p>
               )}
             </div>
           </div>
@@ -419,10 +426,10 @@ export default function SalesOrder({ token, lang, deptColor }) {
       <div className="flex justify-end">
         <button
           type="submit"
-          disabled={submitting || items.every(it => !it.product_name)}
+          disabled={submitting || !contractNo || items.every(it => !it.product_name)}
           className={`px-8 py-3 rounded-xl font-bold text-white text-sm bg-gradient-to-r ${deptColor} hover:opacity-90 disabled:opacity-50 transition-opacity`}
         >
-          {submitting ? '...' : t.submit}
+          {submitting ? '...' : !contractNo ? `🔍 ${t.contract}` : t.submit}
         </button>
       </div>
     </form>

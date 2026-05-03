@@ -16,6 +16,8 @@ const i18n = {
     note: 'หมายเหตุ', 
     noteLegal: 'สัญญาฉบับนี้จัดทำขึ้นเพื่อเป็นหลักฐานการตกลงซื้อ-ขายและมีผลบังคับทางกฎหมายครบถ้วน หากฝ่ายใดฝ่ายหนึ่งผิดสัญญา สามารถดำเนินการตามกฎหมายได้',
     submit: 'บันทึกสัญญา', success: 'สร้างสัญญาสำเร็จ', new: 'สร้างสัญญาใหม่',
+    selectDay: '— วัน —', selectMonth: '— เดือน —', selectYear: '— ปี —',
+    months: ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'],
     payType: 'ประเภทการชำระเงิน', payTerm: 'เงื่อนไขการชำระ',
     cash: 'เงินสด', credit: 'เครดิต', transfer: 'โอนเงิน',
     payTermOptions: {
@@ -41,6 +43,8 @@ const i18n = {
     note: 'Note',
     noteLegal: 'This contract is executed as evidence of the purchase and sale agreement and has full legal force. If either party breaches this contract, legal remedies may be pursued accordingly.',
     submit: 'Save Contract', success: 'Contract Created', new: 'Create Another',
+    selectDay: '— Day —', selectMonth: '— Month —', selectYear: '— Year —',
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     payType: 'Payment Type', payTerm: 'Payment Terms',
     cash: 'Cash', credit: 'Credit', transfer: 'Transfer',
     payTermOptions: {
@@ -66,6 +70,8 @@ const i18n = {
     note: '메모',
     noteLegal: '본 계약서는 매매 계약의 증거로서 작성되며 완전한 법적 효력을 가집니다. 계약 당사자 중 한쪽이 계약을 위반할 경우, 관련 법에 따라 법적 조치를 취할 수 있습니다.',
     submit: '계약 저장', success: '계약 생성 완료', new: '새 계약 작성',
+    selectDay: '— 일 —', selectMonth: '— 월 —', selectYear: '— 연도 —',
+    months: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
     payType: '결제 유형', payTerm: '결제 조건',
     cash: '현금', credit: '외상', transfer: '계좌이체',
     payTermOptions: {
@@ -385,7 +391,7 @@ export default function ContractPanel({ token, lang, deptColor }) {
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-800 mb-1">{t.endDate}</label>
-            <input type="text" name="end_date" value={form.end_date} onChange={handleForm} placeholder="YYYY-MM-DD" pattern="\d{4}-\d{2}-\d{2}" className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            <input type="date" name="end_date" value={form.end_date} onChange={handleForm} className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200" />
           </div>
         </div>
       </div>
@@ -525,6 +531,35 @@ export default function ContractPanel({ token, lang, deptColor }) {
           <textarea name="note" value={t.noteLegal} readOnly rows={4} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm text-gray-900 bg-gray-50 resize-none focus:outline-none cursor-not-allowed" />
           </div>
         </div>
+      </div>
+
+      <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-8 text-center">ลงชื่อคู่สัญญา</p>
+        <div className="grid grid-cols-2 gap-12">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-full border-b-2 border-dashed border-gray-400 h-14 flex items-end justify-center pb-1">
+              <span className="text-gray-300 text-xs select-none">( ลายเซ็น )</span>
+            </div>
+            <div className="text-center space-y-1 w-full">
+              <p className="text-sm font-bold text-gray-900">ผู้ขาย / Seller</p>
+              <p className="text-xs text-gray-600 border-b border-gray-300 pb-1">({form.seller_name || '........................................'})</p>
+              <p className="text-xs text-gray-500">วันที่ / Date ................................</p>
+              <p className="text-xs text-gray-500">ตำแหน่ง / Position ......................</p>
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-full border-b-2 border-dashed border-gray-400 h-14 flex items-end justify-center pb-1">
+              <span className="text-gray-300 text-xs select-none">( ลายเซ็น )</span>
+            </div>
+            <div className="text-center space-y-1 w-full">
+              <p className="text-sm font-bold text-gray-900">ผู้ซื้อ / Buyer</p>
+              <p className="text-xs text-gray-600 border-b border-gray-300 pb-1">({form.customer_name || '........................................'})</p>
+              <p className="text-xs text-gray-500">วันที่ / Date ................................</p>
+              <p className="text-xs text-gray-500">ตำแหน่ง / Position ......................</p>
+            </div>
+          </div>
+        </div>
+        <p className="text-center text-xs text-gray-400 mt-8">สัญญาฉบับนี้ทำขึ้นเป็นสองฉบับ มีข้อความตรงกัน คู่สัญญาแต่ละฝ่ายได้อ่านและเข้าใจข้อความในสัญญาโดยตลอดแล้ว จึงได้ลงลายมือชื่อไว้เป็นหลักฐาน</p>
       </div>
 
       <div className="flex justify-end">

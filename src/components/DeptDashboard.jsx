@@ -12,6 +12,7 @@ import ProductsList from './forms/ProductsList';
 import CustomersList from './forms/CustomersList';
 import SalesOrdersList from './forms/SalesOrdersList';
 import ContractPanel from './forms/ContractPanel';
+import ContractsList from './forms/ContractsList';
 
 const deptMenus = {
   accounting: {
@@ -59,6 +60,7 @@ const deptMenus = {
       { id: 'products_list',       icon: Package,    label: 'รายการสินค้า' },
       { id: 'customers_list',      icon: Users,      label: 'รายชื่อลูกค้า' },
       { id: 'sales_orders_list',   icon: FileText,   label: 'รายการใบสั่งขาย' },
+      { id: 'contracts_list',       icon: ScrollText, label: 'รายการสัญญา' },
     ],
     en: [
       { id: 'add_customer',        icon: Users,      label: 'Add Customer' },
@@ -72,6 +74,7 @@ const deptMenus = {
       { id: 'products_list',       icon: Package,    label: 'Products List' },
       { id: 'customers_list',      icon: Users,      label: 'Customers List' },
       { id: 'sales_orders_list',   icon: FileText,   label: 'Sales Orders List' },
+      { id: 'contracts_list',       icon: ScrollText, label: 'Contracts List' },
     ],
     ko: [
       { id: 'add_customer',        icon: Users,      label: '고객 정보 추가' },
@@ -85,6 +88,7 @@ const deptMenus = {
       { id: 'products_list',       icon: Package,    label: '제품 목록' },
       { id: 'customers_list',      icon: Users,      label: '고객 목록' },
       { id: 'sales_orders_list',   icon: FileText,   label: '판매 주문 목록' },
+      { id: 'contracts_list',       icon: ScrollText, label: '계약 목록' },
     ],
   },
   default: {
@@ -125,6 +129,7 @@ const pageContent = {
   contract:    { th: 'สร้างสัญญาซื้อ-ขาย',           en: 'Create Sale Contract',           ko: '매매 계약서 작성' },
   stock_report:         { th: 'รายงานสต๊อกสินค้าคงเหลือ',       en: 'Stock Report',                ko: '재고 현황 보고서' },
   registrations_report: { th: 'ตารางรายงานผู้ติดต่อลงทะเบียน', en: 'Registration Contact Report', ko: '등록 연락처 보고서' },
+  contracts_list:       { th: 'รายการสัญญา',                       en: 'Contracts List',                ko: '계약 목록' },
 };
 
 const ui18n = {
@@ -303,7 +308,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
 
           {/* Page Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className={active === 'registrations_report' ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
+            <div className={(active === 'registrations_report' || active === 'contracts_list' || active === 'sales_orders_list') ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
               <div className="flex items-center gap-3 mb-6">
                 {ActiveIcon && (
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${dept.color} flex items-center justify-center shadow`}>
@@ -332,6 +337,8 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 <CustomersList token={token} lang={lang} />
               ) : active === 'sales_orders_list' ? (
                 <SalesOrdersList token={token} lang={lang} />
+              ) : active === 'contracts_list' ? (
+                <ContractsList token={token} lang={lang} />
               ) : active === 'sales_order' ? (
                 <SalesOrder token={token} lang={lang} deptColor={dept.color} />
               ) : active === 'contract' ? (
