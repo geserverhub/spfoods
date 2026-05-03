@@ -6,6 +6,7 @@ import DeptLoginModal from './DeptLoginModal';
 import AddCustomerForm from './forms/AddCustomerForm';
 import AddProductForm from './forms/AddProductForm';
 import StockReport from './forms/StockReport';
+import RegistrationsReport from './forms/RegistrationsReport';
 
 const deptMenus = {
   accounting: {
@@ -42,31 +43,34 @@ const deptMenus = {
   },
   sales: {
     th: [
-      { id: 'add_customer',  icon: Users,      label: 'เพิ่มข้อมูลลูกค้า' },
-      { id: 'add_product',   icon: Plus,       label: 'เพิ่มข้อมูลสินค้า' },
-      { id: 'stock_report',  icon: Package,    label: 'ดูรายงานสต๊อกสินค้าคงเหลือ' },
-      { id: 'sales_order',   icon: FileText,   label: 'สร้างใบสั่งขาย' },
-      { id: 'crm',           icon: RefreshCw,  label: 'บันทึกอัพเดตลูกค้าสัมพันธ์' },
-      { id: 'feedback',      icon: BarChart2,  label: 'รายงานปัญหา / ฟีดแบ็คลูกค้า' },
-      { id: 'contract',      icon: ScrollText, label: 'สร้างสัญญาซื้อ-ขาย' },
+      { id: 'add_customer',        icon: Users,      label: 'เพิ่มข้อมูลลูกค้า' },
+      { id: 'add_product',         icon: Plus,       label: 'เพิ่มข้อมูลสินค้า' },
+      { id: 'stock_report',        icon: Package,    label: 'ดูรายงานสต๊อกสินค้าคงเหลือ' },
+      { id: 'sales_order',         icon: FileText,   label: 'สร้างใบสั่งขาย' },
+      { id: 'crm',                 icon: RefreshCw,  label: 'บันทึกอัพเดตลูกค้าสัมพันธ์' },
+      { id: 'feedback',            icon: BarChart2,  label: 'รายงานปัญหา / ฟีดแบ็คลูกค้า' },
+      { id: 'contract',            icon: ScrollText, label: 'สร้างสัญญาซื้อ-ขาย' },
+      { id: 'registrations_report',icon: Users,      label: 'ตารางรายงานผู้ติดต่อลงทะเบียน' },
     ],
     en: [
-      { id: 'add_customer',  icon: Users,      label: 'Add Customer' },
-      { id: 'add_product',   icon: Plus,       label: 'Add Product' },
-      { id: 'stock_report',  icon: Package,    label: 'Stock Report' },
-      { id: 'sales_order',   icon: FileText,   label: 'Create Sales Order' },
-      { id: 'crm',           icon: RefreshCw,  label: 'Update Customer Relations' },
-      { id: 'feedback',      icon: BarChart2,  label: 'Issue Report / Customer Feedback' },
-      { id: 'contract',      icon: ScrollText, label: 'Create Sale Contract' },
+      { id: 'add_customer',        icon: Users,      label: 'Add Customer' },
+      { id: 'add_product',         icon: Plus,       label: 'Add Product' },
+      { id: 'stock_report',        icon: Package,    label: 'Stock Report' },
+      { id: 'sales_order',         icon: FileText,   label: 'Create Sales Order' },
+      { id: 'crm',                 icon: RefreshCw,  label: 'Update Customer Relations' },
+      { id: 'feedback',            icon: BarChart2,  label: 'Issue Report / Customer Feedback' },
+      { id: 'contract',            icon: ScrollText, label: 'Create Sale Contract' },
+      { id: 'registrations_report',icon: Users,      label: 'Registration Contact Report' },
     ],
     ko: [
-      { id: 'add_customer',  icon: Users,      label: '고객 정보 추가' },
-      { id: 'add_product',   icon: Plus,       label: '제품 정보 추가' },
-      { id: 'stock_report',  icon: Package,    label: '재고 현황 보고서' },
-      { id: 'sales_order',   icon: FileText,   label: '판매 주문 작성' },
-      { id: 'crm',           icon: RefreshCw,  label: '고객 관계 업데이트' },
-      { id: 'feedback',      icon: BarChart2,  label: '문제 보고 / 고객 피드백' },
-      { id: 'contract',      icon: ScrollText, label: '매매 계약서 작성' },
+      { id: 'add_customer',        icon: Users,      label: '고객 정보 추가' },
+      { id: 'add_product',         icon: Plus,       label: '제품 정보 추가' },
+      { id: 'stock_report',        icon: Package,    label: '재고 현황 보고서' },
+      { id: 'sales_order',         icon: FileText,   label: '판매 주문 작성' },
+      { id: 'crm',                 icon: RefreshCw,  label: '고객 관계 업데이트' },
+      { id: 'feedback',            icon: BarChart2,  label: '문제 보고 / 고객 피드백' },
+      { id: 'contract',            icon: ScrollText, label: '매매 계약서 작성' },
+      { id: 'registrations_report',icon: Users,      label: '등록 연락처 보고서' },
     ],
   },
   default: {
@@ -105,7 +109,8 @@ const pageContent = {
   crm:         { th: 'บันทึกอัพเดตลูกค้าสัมพันธ์',   en: 'Update Customer Relations',      ko: '고객 관계 업데이트' },
   feedback:    { th: 'รายงานปัญหา / ฟีดแบ็คลูกค้า',  en: 'Issue Report / Customer Feedback', ko: '문제 보고 / 고객 피드백' },
   contract:    { th: 'สร้างสัญญาซื้อ-ขาย',           en: 'Create Sale Contract',           ko: '매매 계약서 작성' },
-  stock_report:{ th: 'รายงานสต๊อกสินค้าคงเหลือ',     en: 'Stock Report',                   ko: '재고 현황 보고서' },
+  stock_report:         { th: 'รายงานสต๊อกสินค้าคงเหลือ',       en: 'Stock Report',                ko: '재고 현황 보고서' },
+  registrations_report: { th: 'ตารางรายงานผู้ติดต่อลงทะเบียน', en: 'Registration Contact Report', ko: '등록 연락처 보고서' },
 };
 
 const ui18n = {
@@ -235,10 +240,10 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 >
                   <span className="text-3xl">{menu.icon}</span>
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-800 text-sm">{menu.label}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{t.clickView}</p>
+                    <p className="font-semibold text-black text-sm">{menu.label}</p>
+                    <p className="text-xs text-gray-600 mt-0.5">{t.clickView}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-300" />
+                  <ChevronRight className="w-4 h-4 text-gray-500" />
                 </button>
               ))}
             </div>
@@ -259,7 +264,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                     className={`flex items-center gap-2 px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
                       isTab
                         ? `border-current ${dept.text} bg-gray-50`
-                        : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300'
+                        : 'border-transparent text-gray-700 hover:text-black hover:border-gray-400'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -272,7 +277,7 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
 
           {/* Page Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className="max-w-4xl mx-auto px-4 py-8">
+            <div className={active === 'registrations_report' ? 'w-full px-4 py-6' : 'max-w-4xl mx-auto px-4 py-8'}>
               <div className="flex items-center gap-3 mb-6">
                 {ActiveIcon && (
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${dept.color} flex items-center justify-center shadow`}>
@@ -295,6 +300,8 @@ function DeptDashboardUI({ dept, labels, ownerMenus, token, lang, setLang, menuL
                 </div>
               ) : active === 'stock_report' ? (
                 <StockReport token={token} lang={lang} deptColor={dept.color} />
+              ) : active === 'registrations_report' ? (
+                <RegistrationsReport token={token} lang={lang} />
               ) : (
                 <div className={`rounded-2xl border-2 border-dashed ${dept.border} ${dept.bg} p-12 text-center`}>
                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${dept.color} flex items-center justify-center mx-auto mb-4 shadow-md`}>
