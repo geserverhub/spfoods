@@ -91,6 +91,7 @@ const adminUsers = [
   { username: 'admin_qc', password: 'qc_2026', role: 'manager', dept_id: 'qc' },
   { username: 'admin_sales', password: 'sales_2026', role: 'manager', dept_id: 'sales' },
   { username: 'owner', password: 'owner_2026', role: 'superadmin', dept_id: null },
+  { username: 'admin', password: '20262026', role: 'superadmin', dept_id: null },
 ];
 
 for (const user of adminUsers) {
